@@ -1,0 +1,31 @@
+name: sembast_web_html_compat
+description: A starting point for Dart libraries or applications.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.4.2
+
+# Add regular dependencies here.
+dependencies:
+  # path: ^1.8.0
+  sembast:
+  sembast_web:
+  sembast_test:
+    git:
+      url: https://github.com/tekartik/sembast.dart
+      path: sembast_test
+      ref: dart2_3
+  idb_shim_html_compat:
+    git:
+      url: https://github.com/tekartik/idb_shim_more.dart
+      path: packages/idb_shim_html_compat
+      ref: dart3a
+    version: '>=0.3.3'
+
+dependency_overrides:
+  idb_shim_html_compat:
+    path: ../idb_shim_html_compat
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0

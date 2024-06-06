@@ -10,6 +10,7 @@ import 'dart:html';
 
 import 'package:idb_shim/idb.dart' as idb;
 import 'package:idb_shim/idb_browser.dart' as idb;
+import 'package:idb_shim_html_compat/idb_client_native_html.dart';
 //import 'dart:indexed_db' as idb;
 
 //idb.IdbFactory idbFactory = window.indexedDB;
@@ -137,11 +138,18 @@ Map<String, String> getArguments(String? search) {
   return params;
 }
 
+idb.IdbFactory? factoryFromName(String? idbFactoryName) {
+  if (idbFactoryName == 'native_html') {
+    return idbFactoryNativeHtml;
+  }
+  return idb.getIdbFactory(idbFactoryName);
+}
+
 Future<void> main() async {
   var urlArgs = getArguments(window.location.search);
   final idbFactoryName = urlArgs['idb_factory'];
   // init factory from url
-  idbFactory = idb.getIdbFactory(idbFactoryName);
+  idbFactory = factoryFromName(idbFactoryName);
   if (idbFactory == null) {
     window.alert(
         "No idbFactory of type '$idbFactoryName' supported on this browser");

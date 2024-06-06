@@ -1,7 +1,6 @@
-concurrency: 1
 platforms:
-  - chrome
   - vm
+  - chrome
 compilers:
   - dart2js
-
+concurrency: 1

@@ -3,4 +3,8 @@
 library idb_shim_native_html;
 
 export 'src/native/idb_native.dart'
-    show idbFactoryNative, idbFactoryNativeSupported, idbFactoryFromIndexedDB;
+    show
+        idbFactoryNative,
+        idbFactoryNativeHtml,
+        idbFactoryNativeSupported,
+        idbFactoryFromIndexedDB;

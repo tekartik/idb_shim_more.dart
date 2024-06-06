@@ -6,6 +6,8 @@ import 'package:idb_shim/src/utils/unimplemented_stub.dart';
 /// The native factory
 @Deprecated('use idbFactoryNative fom idb_client_native_interop')
 IdbFactory get idbFactoryNative => idbUnimplementedStub('idbFactoryNative');
+IdbFactory get idbFactoryNativeHtml => idbUnimplementedStub('idbFactoryNative');
+
 bool get idbFactoryNativeSupported =>
     idbUnimplementedStub('idbFactoryNativeSupported');
 

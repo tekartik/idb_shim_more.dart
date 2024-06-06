@@ -17,7 +17,10 @@ bool get idbFactoryNativeSupported =>
 /// To use instead of html.window.indexedDB but provides the same API.
 ///
 /// throw if IndexedDB is not supported
-IdbFactory get idbFactoryNative => idbFactoryNativeBrowserImpl;
+IdbFactory get idbFactoryNativeHtml => idbFactoryNativeBrowserImpl;
+
+/// The native factory
+IdbFactory get idbFactoryNative => idbFactoryNativeHtml;
 
 /// Wrap the window/service worker implementation
 ///

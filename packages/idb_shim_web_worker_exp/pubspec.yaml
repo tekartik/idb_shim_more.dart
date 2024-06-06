@@ -1,0 +1,35 @@
+name: idb_shim_web_worker_exp
+description: An absolute bare-bones web app.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: '>=3.4.0-0 <4.0.0'
+
+# Add regular dependencies here.
+dependencies:
+  web: '>=0.5.1'
+  idb_shim: '>2.4.1+2'
+  tekartik_js_utils_interop:
+    git:
+      url: https://github.com/tekartik/js_utils.dart
+      path: js_utils_interop
+      ref: dart3a
+    version: '>=0.1.0'
+dev_dependencies:
+  tekartik_lints:
+    git:
+      url: https://github.com/tekartik/common.dart
+      ref: dart3a
+      path: packages/lints
+    version: '>=0.1.0'
+  build_runner: '>=2.4.8'
+  build_web_compilers: '>=4.0.9'
+  lints: '>=3.0.0'
+  process_run:
+  tekartik_app_web_build:
+    git:
+      url: https://github.com/tekartik/app_web_utils.dart
+      ref: dart3a
+      path: packages/app_build
+    version: '>=0.0.1'

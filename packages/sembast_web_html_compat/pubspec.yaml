@@ -9,6 +9,7 @@ environment:
 # Add regular dependencies here.
 dependencies:
   # path: ^1.8.0
+  idb_shim: '>=2.5.0 <4.0.0'
   sembast:
   sembast_web:
   sembast_test:

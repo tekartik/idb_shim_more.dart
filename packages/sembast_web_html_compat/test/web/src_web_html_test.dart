@@ -3,7 +3,7 @@
 library;
 
 import 'package:sembast/sembast.dart';
-import 'package:sembast_web/src/web_html.dart';
+import 'package:sembast_web_html_compat/src/web_html.dart';
 import 'package:test/test.dart';
 
 var testPath = '.dart_tool/sembast_web/databases';

@@ -1,0 +1,25 @@
+name: tekartik_idb_provider
+version: 0.4.0
+description: Provider pattern on top of indexeddb
+publish_to: none
+environment:
+  sdk: ^3.4.0
+dependencies:
+  tekartik_common_utils:
+    git:
+      url: https://github.com/tekartik/common_utils.dart
+      ref: dart3a
+  idb_shim: '>=2.6.0+2'
+  collection: any
+dev_dependencies:
+  process_run: '>=0.10.1'
+  test: any
+  dev_build: '>=0.13.4'
+  build_runner: '>=0.9.0'
+  build_test: '>=0.10.2'
+  build_web_compilers: '>2.0.0'
+  path:
+  sembast:
+dependency_overrides:
+  # idb_shim:
+  #  path: ../../tekartik/idb_shim.dart/idb_shim

@@ -8,7 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  web: '>=0.5.1'
+  web: '>=1.0.0'
   idb_shim: '>2.4.1+2'
   tekartik_js_utils_interop:
     git:

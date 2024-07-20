@@ -6,7 +6,6 @@ import 'dart:indexed_db' as idb;
 
 import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/src/common/common_database.dart';
-import 'package:idb_shim/src/utils/env_utils.dart';
 import 'package:idb_shim_html_compat/src/native/native_error.dart';
 import 'package:idb_shim_html_compat/src/native/native_object_store.dart';
 import 'package:idb_shim_html_compat/src/native/native_transaction.dart';

@@ -33,7 +33,7 @@ Future<void> main() async {
 var sharedWorkerUri = Uri.parse('sw.dart.js');
 late web.Worker worker;
 var _webContextRegisterAndReady = () async {
-  worker = web.Worker(sharedWorkerUri.toString());
+  worker = web.Worker(sharedWorkerUri.toString().toJS);
 }();
 
 var key = 'testValue';

@@ -63,9 +63,9 @@ class ObjectStoreNative extends ObjectStore {
   }
 
   @override
-  Future delete(key) {
+  Future delete(Object keyOrRange) {
     return catchAsyncNativeError(() {
-      return idbObjectStore.delete(key);
+      return idbObjectStore.delete(keyOrRange);
     });
   }
 

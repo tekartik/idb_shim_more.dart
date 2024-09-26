@@ -9,7 +9,7 @@ dependencies:
     git:
       url: https://github.com/tekartik/common_utils.dart
       ref: dart3a
-  idb_shim: '>=2.6.0+2'
+  idb_shim: '>=2.6.1+6'
   collection: any
 dev_dependencies:
   process_run: '>=0.10.1'

@@ -1,5 +1,5 @@
 @TestOn('browser && !wasm')
-library sembast_test.test.web.idb_nativetest;
+library;
 
 import 'package:idb_shim_html_compat/idb_client_native_html.dart';
 import 'package:sembast_test/all_jdb_test.dart' as all_jdb_test;

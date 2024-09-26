@@ -1,4 +1,3 @@
-import 'package:idb_shim/idb_client.dart';
 import 'package:tekartik_idb_provider/provider.dart';
 import 'package:tekartik_idb_provider/record_provider.dart';
 

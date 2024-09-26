@@ -3,7 +3,6 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_client_native.dart' as native_web;
 import 'package:idb_shim_html_compat/idb_client_native_html.dart'
     as native_html;

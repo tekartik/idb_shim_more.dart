@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_client_native.dart';
 import 'package:web/web.dart' as web;
 

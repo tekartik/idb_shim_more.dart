@@ -8,7 +8,6 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:idb_shim/idb.dart' as idb;
 import 'package:idb_shim/idb_browser.dart' as idb;
 import 'package:idb_shim_html_compat/idb_client_native_html.dart';
 //import 'dart:indexed_db' as idb;

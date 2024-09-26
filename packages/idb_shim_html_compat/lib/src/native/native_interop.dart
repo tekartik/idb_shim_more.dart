@@ -1,5 +1,5 @@
 @JS()
-library idb_shim.native_interop;
+library;
 
 import 'dart:indexed_db' as idb;
 

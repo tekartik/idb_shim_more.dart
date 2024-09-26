@@ -1,6 +1,5 @@
 library tekartik_app_transaction_test;
 
-import 'package:idb_shim/idb_client.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_idb_provider/provider.dart';
 

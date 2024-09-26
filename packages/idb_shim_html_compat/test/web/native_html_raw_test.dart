@@ -1,12 +1,9 @@
 @TestOn('browser && !wasm')
-library idb_shim.test_runner_client_native_test;
+library;
 
 import 'dart:html';
 import 'dart:indexed_db' as idb;
-import 'dart:indexed_db';
 import 'dart:typed_data';
-
-import 'package:idb_shim/idb.dart' show idbModeReadWrite;
 
 import '../idb_test_common.dart';
 import 'idb_browser_test_common.dart';
@@ -241,24 +238,18 @@ void main() {
     }
 
     test('KeyRangeLowerBound', () {
-      expectThrow(() => KeyRange.lowerBound(null, false));
-      expectThrow(() => KeyRange.lowerBound(null, true));
       expectThrow(() => KeyRange.lowerBound([1, null], false));
       expectThrow(() => KeyRange.lowerBound([1, null], true));
       KeyRange.lowerBound([1, 1], false);
       KeyRange.lowerBound([1, 1], true);
     });
     test('KeyRangeUpperBound', () {
-      expectThrow(() => KeyRange.upperBound(null, false));
-      expectThrow(() => KeyRange.upperBound(null, true));
       expectThrow(() => KeyRange.upperBound([1, null], false));
       expectThrow(() => KeyRange.upperBound([1, null], true));
       KeyRange.upperBound([1, 1], false);
       KeyRange.upperBound([1, 1], true);
     });
     test('KeyRangeBound', () {
-      expectThrow(() => KeyRange.bound(1, null, true, true));
-      expectThrow(() => KeyRange.bound(null, 1, true, true));
       expectThrow(() => KeyRange.bound([1, null], [1, null], true, true));
       KeyRange.bound(1, 2, false, false);
       KeyRange.bound(1, 2, true, true);

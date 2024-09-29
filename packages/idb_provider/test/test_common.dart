@@ -1,4 +1,4 @@
-library tekartik_idb_provider.test.test_common;
+library;
 
 import 'package:idb_shim/idb_client_sembast.dart';
 import 'package:sembast/sembast.dart' as sdb;

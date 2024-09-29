@@ -1,4 +1,4 @@
-library tekartik_app_transaction_test;
+library;
 
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_idb_provider/provider.dart';

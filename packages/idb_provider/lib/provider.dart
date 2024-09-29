@@ -1,4 +1,4 @@
-library tekartik_provider;
+library;
 
 import 'package:idb_shim/idb_client.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';

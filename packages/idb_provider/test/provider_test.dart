@@ -1,4 +1,4 @@
-library tekartik_app_provider_test;
+library;
 
 import 'package:tekartik_idb_provider/provider.dart';
 

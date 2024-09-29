@@ -1,4 +1,4 @@
-library tekartik_idb_provider.record_provider;
+library;
 
 import 'dart:async';
 

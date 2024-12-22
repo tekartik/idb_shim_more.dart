@@ -11,22 +11,19 @@ analyzer:
 
 linter:
   rules:
-    - avoid_print
     - always_declare_return_types
     - avoid_dynamic_calls
+    - avoid_print
     - avoid_slow_async_io
     - cancel_subscriptions
     - directives_ordering
     - no_adjacent_strings_in_list
     - omit_local_variable_types
-    - package_api_docs
+    - prefer_const_constructors
     - prefer_single_quotes
+    - public_member_api_docs
     - sort_child_properties_last
     - test_types_in_equals
     - throw_in_finally
     - unawaited_futures
-    - unnecessary_null_aware_assignments
     - unnecessary_statements
-    - unsafe_html
-    - prefer_const_constructors
-    - public_member_api_docs

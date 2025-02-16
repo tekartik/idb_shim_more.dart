@@ -5,24 +5,27 @@
 // This is a port of 'A Simple ToDo List Using HTML5 IndexedDB' to Dart.
 // See: http://www.html5rocks.com/en/tutorials/indexeddb/todo/
 
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:async';
-import 'dart:html';
 
 import 'package:idb_shim/idb_browser.dart' as idb;
 import 'package:idb_shim_html_compat/idb_client_native_html.dart';
-//import 'dart:indexed_db' as idb;
+import 'package:web/web.dart' as web;
 
-//idb.IdbFactory idbFactory = window.indexedDB;
 idb.IdbFactory? idbFactory;
 
 class TodoList {
-  late InputElement _input;
-  late Element _todoItems;
+  late web.HTMLInputElement _input;
+  late web.Element _todoItems;
 
   TodoList() {
-    _todoItems = querySelector('#todo-items')!;
-    _input = querySelector('#todo') as InputElement;
-    querySelector('input#submit')!.onClick.listen((e) => _onAddTodo());
+    _todoItems = web.document.querySelector('#todo-items')!;
+    _input = web.document.querySelector('#todo') as web.HTMLInputElement;
+    web.document
+        .querySelector('input#submit')!
+        .onClick
+        .listen((e) => _onAddTodo());
   }
 
   static final String _todosDb = 'com.tekartik.idb.todo';
@@ -42,8 +45,10 @@ class TodoList {
   void _onError(Object e) {
     // Get the user's attention for the sake of this tutorial. (Of course we
     // would *never* use window.alert() in real life.)
-    window.alert('Oh no! Something went wrong. See the console for details.');
-    window.console.log('An error occurred: {$e}');
+    web.window
+        .alert('Oh no! Something went wrong. See the console for details.');
+    // ignore: avoid_print
+    print('An error occurred: {$e}');
   }
 
   void _onDbOpened(idb.Database db) {
@@ -59,7 +64,7 @@ class TodoList {
   }
 
   void _onAddTodo() {
-    var value = _input.value!.trim();
+    var value = _input.value.trim();
     if (value.isNotEmpty) {
       _addTodo(value);
     }
@@ -85,8 +90,14 @@ class TodoList {
     request.then((e) => _getAllTodoItems(), onError: _onError);
   }
 
+  void clearChildren(web.Element element) {
+    while (element.firstChild != null) {
+      element.removeChild(element.firstChild!);
+    }
+  }
+
   void _getAllTodoItems() {
-    _todoItems.nodes.clear();
+    clearChildren(_todoItems);
 
     var trans = _db.transaction(_todosStore, 'readwrite');
     var store = trans.objectStore(_todosStore);
@@ -98,18 +109,18 @@ class TodoList {
   }
 
   void _renderTodo(Map todoItem) {
-    var textDisplay = Element.tag('span');
-    textDisplay.text = todoItem['text'] as String?;
+    var textDisplay = web.HTMLSpanElement();
+    textDisplay.text = (todoItem['text'] as String?) ?? '';
 
-    var deleteControl = Element.tag('a');
+    var deleteControl = web.HTMLAnchorElement();
     deleteControl.text = '[Delete]';
     deleteControl.onClick
         .listen((e) => _deleteTodo(todoItem['timeStamp'] as String));
 
-    var item = Element.tag('li');
-    item.nodes.add(textDisplay);
-    item.nodes.add(deleteControl);
-    _todoItems.nodes.add(item);
+    var item = web.HTMLLIElement();
+    item.appendChild(textDisplay);
+    item.appendChild(deleteControl);
+    _todoItems.appendChild(item);
   }
 }
 
@@ -145,15 +156,16 @@ idb.IdbFactory? factoryFromName(String? idbFactoryName) {
 }
 
 Future<void> main() async {
-  var urlArgs = getArguments(window.location.search);
+  var urlArgs = getArguments(web.window.location.search);
   final idbFactoryName = urlArgs['idb_factory'];
   // init factory from url
   idbFactory = factoryFromName(idbFactoryName);
   if (idbFactory == null) {
-    window.alert(
+    web.window.alert(
         "No idbFactory of type '$idbFactoryName' supported on this browser");
   } else {
-    querySelector('#idb span')!.innerHtml = "Using '${idbFactory!.name}'";
+    web.document.querySelector('#idb span')!.textContent =
+        "Using '${idbFactory!.name}'";
     await TodoList().open();
   }
 }

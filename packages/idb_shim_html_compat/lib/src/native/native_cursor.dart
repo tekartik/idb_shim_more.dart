@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
+// ignore: deprecated_member_use
 import 'dart:indexed_db' as idb;
 
 import 'package:idb_shim/idb.dart';

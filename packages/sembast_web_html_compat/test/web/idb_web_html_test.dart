@@ -1,6 +1,7 @@
 @TestOn('browser && !wasm')
 library;
 
+// ignore: deprecated_member_use
 import 'package:idb_shim_html_compat/idb_client_native_html.dart';
 import 'package:sembast_test/all_jdb_test.dart' as all_jdb_test;
 import 'package:sembast_test/all_test.dart';

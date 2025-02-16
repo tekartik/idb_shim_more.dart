@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'package:idb_shim_html_compat/idb_client_native_html.dart';
 import 'package:test/test.dart';
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+// ignore: deprecated_member_use
 import 'dart:html';
 
 import 'package:idb_shim/idb_client_native_html.dart';

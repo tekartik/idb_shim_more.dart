@@ -110,7 +110,7 @@ class TodoList {
 
   void _renderTodo(Map todoItem) {
     var textDisplay = web.HTMLSpanElement();
-    textDisplay.text = (todoItem['text'] as String?) ?? '';
+    textDisplay.textContent = (todoItem['text'] as String?) ?? '';
 
     var deleteControl = web.HTMLAnchorElement();
     deleteControl.text = '[Delete]';

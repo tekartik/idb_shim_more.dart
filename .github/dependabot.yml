@@ -6,7 +6,7 @@ enable-beta-ecosystems: true
 
 updates:
   - package-ecosystem: "pub"
-    directory: "packages/idb_provider.dart"
+    directory: "packages/idb_provider"
     schedule:
       interval: "monthly"
   - package-ecosystem: "pub"
@@ -15,6 +15,10 @@ updates:
       interval: "monthly"
   - package-ecosystem: "pub"
     directory: "packages/idb_shim_web_worker_exp"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "pub"
+    directory: "packages/sdb_shim_web_worker_exp"
     schedule:
       interval: "monthly"
   - package-ecosystem: "pub"

@@ -1,24 +1,15 @@
-A bare-bones Dart web app.
+# Web worker example
 
-Uses [`package:web`](https://pub.dev/packages/web)
-to interop with JS and the DOM.
+You have to build the app and the worker.
 
-## Running and building
-
-To run the app,
-activate and use [`package:webdev`](https://dart.dev/tools/webdev):
-
-```
-dart pub global activate webdev
-webdev serve
+To build:
+```shell
+webdev build -o example:build
 ```
 
-To build a production version ready for deployment,
-use the `webdev build` command:
-
+To serve the built result:
+```shell
+cd build
+dart pub global activate dhttpd
+dart pub global run dhttpd
 ```
-webdev build
-```
-
-To learn how to interop with web APIs and other JS libraries,
-check out https://dart.dev/interop/js-interop.

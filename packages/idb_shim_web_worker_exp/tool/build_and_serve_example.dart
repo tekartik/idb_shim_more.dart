@@ -2,8 +2,8 @@
 
 import 'package:process_run/shell.dart';
 import 'package:tekartik_app_web_build/dhttpd.dart';
-
 Future<void> main(List<String> args) async {
+
   if (true) {
     await run('''
       dart pub get

@@ -14,7 +14,8 @@ final scope = (globalContext as web.DedicatedWorkerGlobalScope);
 
 final _store = 'values';
 var _database = () async {
-  var factory = idbFactoryFromIndexedDB(scope.indexedDB);
+  final factory = idbFactoryWebWorker;
+  // equivalent to: factory = idbFactoryFromIndexedDB(scope.indexedDB);
   return factory.open('idb_shim_web_worker_exp_db', version: 1,
       onUpgradeNeeded: (VersionChangeEvent e) {
     var db = e.database;

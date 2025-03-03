@@ -1,4 +1,4 @@
-# IDB Web worker example
+# SDB Web worker example
 
 You have to build the app and the worker.
 

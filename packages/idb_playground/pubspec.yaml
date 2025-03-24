@@ -1,0 +1,26 @@
+name: tekartik_idb_playground
+description: idb_shim playground
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.7.2
+
+# Add regular dependencies here.
+dependencies:
+  web:
+  path:
+  idb_shim:
+  idb_sqflite:
+  sqflite_common_ffi:
+  tekartik_app_dev_menu:
+    git:
+      url: https://github.com/tekartik/app_common_utils.dart
+      ref: dart3a
+      path: app_dev_menu
+
+dev_dependencies:
+  build_runner: ^2.4.8
+  build_web_compilers: ^4.0.9
+  lints: ^5.0.0
+resolution: workspace

@@ -30,6 +30,5 @@ dev_dependencies:
   build_web_compilers: '>=2.16.4'
   yaml: '>=3.0.0'
   lints: '>=1.0.1'
+resolution: workspace
 
-dependency_overrides:
-  web: ">=1.1.0"

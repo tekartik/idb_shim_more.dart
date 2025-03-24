@@ -33,3 +33,4 @@ dev_dependencies:
       ref: dart3a
       path: packages/app_build
     version: '>=0.0.1'
+resolution: workspace

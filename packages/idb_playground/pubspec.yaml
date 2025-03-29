@@ -9,10 +9,10 @@ environment:
 # Add regular dependencies here.
 dependencies:
   web:
-  path:
+  path: ">=1.9.0"
   idb_shim:
   idb_sqflite:
-  sqflite_common_ffi:
+  sqflite_common_ffi: ">=2.3.4"
   tekartik_app_dev_menu:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
@@ -20,7 +20,7 @@ dependencies:
       path: app_dev_menu
 
 dev_dependencies:
-  build_runner: ^2.4.8
-  build_web_compilers: ^4.0.9
-  lints: ^5.0.0
+  build_runner: ">=2.4.13"
+  build_web_compilers: ">=4.0.11"
+  lints: ">=5.0.0"
 resolution: workspace

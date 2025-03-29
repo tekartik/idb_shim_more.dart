@@ -4,13 +4,13 @@ version: 1.0.0
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.6.0
 
 # Add regular dependencies here.
 dependencies:
   # path: ^1.8.0
   idb_shim: '>=2.5.0 <4.0.0'
-  sembast:
+  sembast: ">=3.7.4+3"
   sembast_web:
   sembast_test:
     git:
@@ -25,6 +25,6 @@ dependencies:
     version: '>=0.3.3'
 
 dev_dependencies:
-  lints: '>=4.0.0'
+  lints: ">=5.0.0"
   test: '>=1.24.0'
 resolution: workspace

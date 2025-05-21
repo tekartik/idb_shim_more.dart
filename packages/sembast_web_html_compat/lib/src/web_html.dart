@@ -74,21 +74,24 @@ void addStorageRevision(StorageRevision storageRevision) {
 Stream<StorageRevision> get storageRevisionStream {
   StreamSubscription? storageEventSubscription;
   late StreamController<StorageRevision> ctlr;
-  ctlr = StreamController<StorageRevision>(onListen: () {
-    storageEventSubscription = window.onStorage.listen((event) {
-      if (debugStorageNotification) {
-        // ignore: avoid_print
-        print('getting ${event.key}: ${event.newValue}');
-      }
-      if (event.key!.startsWith(_sembastStorageKeyPrefix)) {
-        var name = event.key!.substring(_sembastStorageKeyPrefix.length);
-        var revision =
-            event.newValue == null ? 0 : (int.tryParse(event.newValue!) ?? 0);
-        ctlr.add(StorageRevision(name, revision));
-      }
-    });
-  }, onCancel: () {
-    storageEventSubscription?.cancel();
-  });
+  ctlr = StreamController<StorageRevision>(
+    onListen: () {
+      storageEventSubscription = window.onStorage.listen((event) {
+        if (debugStorageNotification) {
+          // ignore: avoid_print
+          print('getting ${event.key}: ${event.newValue}');
+        }
+        if (event.key!.startsWith(_sembastStorageKeyPrefix)) {
+          var name = event.key!.substring(_sembastStorageKeyPrefix.length);
+          var revision =
+              event.newValue == null ? 0 : (int.tryParse(event.newValue!) ?? 0);
+          ctlr.add(StorageRevision(name, revision));
+        }
+      });
+    },
+    onCancel: () {
+      storageEventSubscription?.cancel();
+    },
+  );
   return ctlr.stream;
 }

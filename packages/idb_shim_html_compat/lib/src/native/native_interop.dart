@@ -14,13 +14,15 @@ import 'package:js/js.dart';
 /// Copied from dart sdk
 ///
 Stream<idb.Cursor> cursorStreamFromResult(
-    idb.Request request, bool? autoAdvance) {
-// TODO: need to guarantee that the controller provides the values
-// immediately as waiting until the next tick will cause the transaction to
-// close.
+  idb.Request request,
+  bool? autoAdvance,
+) {
+  // TODO: need to guarantee that the controller provides the values
+  // immediately as waiting until the next tick will cause the transaction to
+  // close.
   var controller = StreamController<idb.Cursor>(sync: true);
 
-//TODO: Report stacktrace once issue 4061 is resolved.
+  //TODO: Report stacktrace once issue 4061 is resolved.
   request.onError.listen(controller.addError);
 
   request.onSuccess.listen((e) {
@@ -40,8 +42,13 @@ Stream<idb.Cursor> cursorStreamFromResult(
 ///
 /// Creates a stream of cursors over the records in this object store.
 ///
-Stream<idb.Cursor> storeOpenKeyCursor(idb.ObjectStore objectStore,
-    {dynamic key, idb.KeyRange? range, String? direction, bool? autoAdvance}) {
+Stream<idb.Cursor> storeOpenKeyCursor(
+  idb.ObjectStore objectStore, {
+  dynamic key,
+  idb.KeyRange? range,
+  String? direction,
+  bool? autoAdvance,
+}) {
   dynamic keyOrRange;
   if (key != null) {
     if (range != null) {
@@ -82,8 +89,11 @@ Future<List<Object>> _completeObjectListRequest(idb.Request request) =>
 ///
 /// [query] is a native query
 ///
-Future<List<Object>> storeGetAll(idb.ObjectStore objectStore,
-    [dynamic query, int? count]) async {
+Future<List<Object>> storeGetAll(
+  idb.ObjectStore objectStore, [
+  dynamic query,
+  int? count,
+]) async {
   try {
     idb.Request request;
     if (count != null) {
@@ -100,8 +110,11 @@ Future<List<Object>> storeGetAll(idb.ObjectStore objectStore,
 ///
 /// [query] is a native query
 ///
-Future<List<Object>> storeGetAllKeys(idb.ObjectStore objectStore,
-    [dynamic query, int? count]) async {
+Future<List<Object>> storeGetAllKeys(
+  idb.ObjectStore objectStore, [
+  dynamic query,
+  int? count,
+]) async {
   try {
     idb.Request request;
     if (count != null) {
@@ -118,8 +131,11 @@ Future<List<Object>> storeGetAllKeys(idb.ObjectStore objectStore,
 ///
 /// [query] is a native query
 ///
-Future<List<Object>> indexGetAll(idb.Index index,
-    [dynamic query, int? count]) async {
+Future<List<Object>> indexGetAll(
+  idb.Index index, [
+  dynamic query,
+  int? count,
+]) async {
   try {
     idb.Request request;
     if (count != null) {
@@ -136,8 +152,11 @@ Future<List<Object>> indexGetAll(idb.Index index,
 ///
 /// [query] is a native query
 ///
-Future<List<Object>> indexGetAllKeys(idb.Index index,
-    [dynamic query, int? count]) async {
+Future<List<Object>> indexGetAllKeys(
+  idb.Index index, [
+  dynamic query,
+  int? count,
+]) async {
   try {
     idb.Request request;
     if (count != null) {

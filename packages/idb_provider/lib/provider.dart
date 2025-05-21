@@ -172,35 +172,35 @@ abstract class Provider {
     return _storesMeta;
   }
 
-//      Database db = e.database;
-//      int version = e.oldVersion;
-//
-//      if (e.oldVersion == 1) {
-//        db.deleteObjectStore(FILES_STORE);
-//
-//        // dev bug
-//        if (db.objectStoreNames.contains(METAS_STORE)) {
-//          db.deleteObjectStore(METAS_STORE);
-//        }
-//      }
-//
-//      var objectStore = db.createObjectStore(FILES_STORE, autoIncrement: true);
-//      Index index = objectStore.createIndex(NAME_INDEX, NAME_FIELD, unique: true);
-//
-//
-//      var metaStrore = db.createObjectStore(METAS_STORE, autoIncrement: true);
-//      Index fileIndex = metaStrore.createIndex(FILE_ID_INDEX, FILE_ID_FIELD, unique: true);
-//    }
+  //      Database db = e.database;
+  //      int version = e.oldVersion;
+  //
+  //      if (e.oldVersion == 1) {
+  //        db.deleteObjectStore(FILES_STORE);
+  //
+  //        // dev bug
+  //        if (db.objectStoreNames.contains(METAS_STORE)) {
+  //          db.deleteObjectStore(METAS_STORE);
+  //        }
+  //      }
+  //
+  //      var objectStore = db.createObjectStore(FILES_STORE, autoIncrement: true);
+  //      Index index = objectStore.createIndex(NAME_INDEX, NAME_FIELD, unique: true);
+  //
+  //
+  //      var metaStrore = db.createObjectStore(METAS_STORE, autoIncrement: true);
+  //      Index fileIndex = metaStrore.createIndex(FILE_ID_INDEX, FILE_ID_FIELD, unique: true);
+  //    }
 
-//  Stream<CursorWithValue> Future<List<MetaRow>> metaCursorToList(Stream<CursorWithValue> stream) {
-//      List<MetaRow> list = new List();
-//      return stream.listen((CursorWithValue cwv) {
-//        MetaRow row = new MetaRow.fromCursor(cwv);
-//
-//        list.add(row);
-//        cwv.next();
-//      }).asFuture(list);
-//    }
+  //  Stream<CursorWithValue> Future<List<MetaRow>> metaCursorToList(Stream<CursorWithValue> stream) {
+  //      List<MetaRow> list = new List();
+  //      return stream.listen((CursorWithValue cwv) {
+  //        MetaRow row = new MetaRow.fromCursor(cwv);
+  //
+  //        list.add(row);
+  //        cwv.next();
+  //      }).asFuture(list);
+  //    }
 
   Future delete() {
     close();
@@ -218,39 +218,51 @@ abstract class Provider {
 
       _ready = _readyCompleter!.future;
 
-      runZonedGuarded(() {
-        return _idbFactory!
-            .open(_databaseMeta!.name,
+      runZonedGuarded(
+        () {
+          return _idbFactory!
+              .open(
+                _databaseMeta!.name,
                 version: _databaseMeta!.version,
-                onUpgradeNeeded: _onUpdateDatabase)
-            .then((Database db) {
-          _setDatabase(db);
-          _readyCompleter!.complete(this);
-        });
-      }, (e, StackTrace st) {
-        print('open failed');
-        print(e);
-        print(st);
-        _readyCompleter!.completeError(e, st);
-      });
+                onUpgradeNeeded: _onUpdateDatabase,
+              )
+              .then((Database db) {
+                _setDatabase(db);
+                _readyCompleter!.complete(this);
+              });
+        },
+        (e, StackTrace st) {
+          print('open failed');
+          print(e);
+          print(st);
+          _readyCompleter!.completeError(e, st);
+        },
+      );
     }
     return _ready;
   }
 
-// default read-only
-  ProviderStoreTransaction storeTransaction(String storeName,
-      [bool readWrite = false]) {
+  // default read-only
+  ProviderStoreTransaction storeTransaction(
+    String storeName, [
+    bool readWrite = false,
+  ]) {
     return ProviderStoreTransaction(this, storeName, readWrite);
   }
 
   // default read-only
-  ProviderIndexTransaction indexTransaction(String storeName, String indexName,
-      [bool readWrite = false]) {
+  ProviderIndexTransaction indexTransaction(
+    String storeName,
+    String indexName, [
+    bool readWrite = false,
+  ]) {
     return ProviderIndexTransaction(this, storeName, indexName, readWrite);
   }
 
-  ProviderTransactionList transactionList(List<String> storeNames,
-      [bool readWrite = false]) {
+  ProviderTransactionList transactionList(
+    List<String> storeNames, [
+    bool readWrite = false,
+  ]) {
     return ProviderTransactionList(this, storeNames, readWrite);
   }
 

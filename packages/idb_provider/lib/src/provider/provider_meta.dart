@@ -44,15 +44,18 @@ class ProviderDb {
   ProviderDb(this._database);
 
   ProviderStore createStore(ProviderStoreMeta meta) {
-    final objectStore = database!.createObjectStore(meta.name,
-        keyPath: meta.keyPath, autoIncrement: meta.autoIncrement);
+    final objectStore = database!.createObjectStore(
+      meta.name,
+      keyPath: meta.keyPath,
+      autoIncrement: meta.autoIncrement,
+    );
     return ProviderStore(objectStore);
   }
 
   /// during onUpdateOnly
   /// return false if it does not exists
   bool deleteStore(String name) {
-// dev bug
+    // dev bug
     if (storeNames.contains(name)) {
       database!.deleteObjectStore(name);
       return true;
@@ -100,8 +103,10 @@ class ProviderStoresMeta {
   @override
   bool operator ==(other) {
     if (other is ProviderStoresMeta) {
-      return const UnorderedIterableEquality<Object?>()
-          .equals(stores, other.stores);
+      return const UnorderedIterableEquality<Object?>().equals(
+        stores,
+        other.stores,
+      );
     }
     return false;
   }
@@ -115,18 +120,25 @@ class ProviderStoreMeta {
   final String? keyPath;
   final bool autoIncrement;
 
-  ProviderStoreMeta(this.name,
-      {this.keyPath, bool? autoIncrement, List<ProviderIndexMeta?>? indecies})
-      //
-      : autoIncrement = (autoIncrement == true)
-        //
-        ,
-        indecies = (indecies == null) ? [] : indecies;
+  ProviderStoreMeta(
+    this.name, {
+    this.keyPath,
+    bool? autoIncrement,
+    List<ProviderIndexMeta?>? indecies,
+  })
+    //
+    : autoIncrement = (autoIncrement == true),
+       //
+       indecies = (indecies == null) ? [] : indecies;
   final List<ProviderIndexMeta?> indecies;
 
   ProviderStoreMeta overrideIndecies(List<ProviderIndexMeta> indecies) {
-    return ProviderStoreMeta(name,
-        keyPath: keyPath, autoIncrement: autoIncrement, indecies: indecies);
+    return ProviderStoreMeta(
+      name,
+      keyPath: keyPath,
+      autoIncrement: autoIncrement,
+      indecies: indecies,
+    );
   }
 
   @override
@@ -147,8 +159,10 @@ class ProviderStoreMeta {
         return false;
       }
       // order not important for index
-      if (!(const UnorderedIterableEquality<Object?>()
-          .equals(indecies, other.indecies))) {
+      if (!(const UnorderedIterableEquality<Object?>().equals(
+        indecies,
+        other.indecies,
+      ))) {
         return false;
       }
       return true;
@@ -171,10 +185,12 @@ class ProviderStore {
         final index = this.index(indexName);
         indecies.add(index.meta);
       }
-      _meta = ProviderStoreMeta(objectStore.name,
-          keyPath: objectStore.keyPath as String?,
-          autoIncrement: objectStore.autoIncrement,
-          indecies: indecies);
+      _meta = ProviderStoreMeta(
+        objectStore.name,
+        keyPath: objectStore.keyPath as String?,
+        autoIncrement: objectStore.autoIncrement,
+        indecies: indecies,
+      );
     }
     return _meta;
   }
@@ -184,8 +200,12 @@ class ProviderStore {
   ProviderStore(this.objectStore);
 
   ProviderIndex createIndex(ProviderIndexMeta meta) {
-    final index = objectStore.createIndex(meta.name, meta.keyPath,
-        unique: meta.unique, multiEntry: meta.multiEntry);
+    final index = objectStore.createIndex(
+      meta.name,
+      meta.keyPath,
+      unique: meta.unique,
+      multiEntry: meta.multiEntry,
+    );
     return ProviderIndex(index);
   }
 
@@ -216,9 +236,9 @@ class ProviderIndexMeta {
   final bool multiEntry;
 
   ProviderIndexMeta(this.name, this.keyPath, {bool? unique, bool? multiEntry})
-      //
-      : unique = (unique == true),
-        multiEntry = (multiEntry == true);
+    //
+    : unique = (unique == true),
+      multiEntry = (multiEntry == true);
 
   @override
   int get hashCode {
@@ -255,8 +275,12 @@ class ProviderIndex {
   ProviderIndexMeta? _meta;
 
   ProviderIndexMeta? get meta {
-    _meta ??= ProviderIndexMeta(index.name, index.keyPath,
-        unique: index.unique, multiEntry: index.multiEntry);
+    _meta ??= ProviderIndexMeta(
+      index.name,
+      index.keyPath,
+      unique: index.unique,
+      multiEntry: index.multiEntry,
+    );
 
     return _meta;
   }

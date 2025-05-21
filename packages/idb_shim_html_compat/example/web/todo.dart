@@ -45,8 +45,9 @@ class TodoList {
   void _onError(Object e) {
     // Get the user's attention for the sake of this tutorial. (Of course we
     // would *never* use window.alert() in real life.)
-    web.window
-        .alert('Oh no! Something went wrong. See the console for details.');
+    web.window.alert(
+      'Oh no! Something went wrong. See the console for details.',
+    );
     // ignore: avoid_print
     print('An error occurred: {$e}');
   }
@@ -77,7 +78,7 @@ class TodoList {
     return store
         .put({
           'text': text,
-          'timeStamp': DateTime.now().millisecondsSinceEpoch.toString()
+          'timeStamp': DateTime.now().millisecondsSinceEpoch.toString(),
         })
         .then((_) => _getAllTodoItems())
         .catchError((e) => _onError);
@@ -114,8 +115,9 @@ class TodoList {
 
     var deleteControl = web.HTMLAnchorElement();
     deleteControl.text = '[Delete]';
-    deleteControl.onClick
-        .listen((e) => _deleteTodo(todoItem['timeStamp'] as String));
+    deleteControl.onClick.listen(
+      (e) => _deleteTodo(todoItem['timeStamp'] as String),
+    );
 
     var item = web.HTMLLIElement();
     item.appendChild(textDisplay);
@@ -162,7 +164,8 @@ Future<void> main() async {
   idbFactory = factoryFromName(idbFactoryName);
   if (idbFactory == null) {
     web.window.alert(
-        "No idbFactory of type '$idbFactoryName' supported on this browser");
+      "No idbFactory of type '$idbFactoryName' supported on this browser",
+    );
   } else {
     web.document.querySelector('#idb span')!.textContent =
         "Using '${idbFactory!.name}'";

@@ -22,8 +22,14 @@ class ObjectStoreNative extends ObjectStore {
     if (keyPath is Iterable) {
       keyPath = List<String>.from(keyPath);
     }
-    return IndexNative(idbObjectStore.createIndex(name, keyPath,
-        unique: unique, multiEntry: multiEntry));
+    return IndexNative(
+      idbObjectStore.createIndex(
+        name,
+        keyPath,
+        unique: unique,
+        multiEntry: multiEntry,
+      ),
+    );
   }
 
   @override
@@ -75,8 +81,12 @@ class ObjectStoreNative extends ObjectStore {
   }
 
   @override
-  Stream<CursorWithValue> openCursor(
-      {key, KeyRange? range, String? direction, bool? autoAdvance}) {
+  Stream<CursorWithValue> openCursor({
+    key,
+    KeyRange? range,
+    String? direction,
+    bool? autoAdvance,
+  }) {
     final idbKeyRange = toNativeKeyRange(range);
     //idbDevWarning;
     //idbDevPrint("kr1 $range native $idbKeyRange");
@@ -86,42 +96,52 @@ class ObjectStoreNative extends ObjectStore {
     // IE workaround!!!
     if (idbKeyRange == null) {
       stream = idbObjectStore.openCursor(
-          //
-          key: key, //
-          // Weird on ie, uncommenting this line
-          // although null makes it crash
-          // range: idbKeyRange
-          direction: direction, //
-          autoAdvance: autoAdvance);
+        //
+        key: key, //
+        // Weird on ie, uncommenting this line
+        // although null makes it crash
+        // range: idbKeyRange
+        direction: direction, //
+        autoAdvance: autoAdvance,
+      );
     } else {
       stream = idbObjectStore.openCursor(
-          //
-          key: key, //
-          range: idbKeyRange,
-          direction: direction, //
-          autoAdvance: autoAdvance);
+        //
+        key: key, //
+        range: idbKeyRange,
+        direction: direction, //
+        autoAdvance: autoAdvance,
+      );
     }
 
-    final ctlr = CursorWithValueControllerNative(//
-        stream);
+    final ctlr = CursorWithValueControllerNative(
+      //
+      stream,
+    );
     return ctlr.stream;
   }
 
   @override
-  Stream<Cursor> openKeyCursor(
-      {key, KeyRange? range, String? direction, bool? autoAdvance}) {
+  Stream<Cursor> openKeyCursor({
+    key,
+    KeyRange? range,
+    String? direction,
+    bool? autoAdvance,
+  }) {
     final idbKeyRange = toNativeKeyRange(range);
     //idbDevWarning;
     //idbDevPrint("kr1 $range native $idbKeyRange");
 
     Stream<idb.Cursor> stream;
 
-    stream = storeOpenKeyCursor(idbObjectStore,
-        //
-        key: key, //
-        range: idbKeyRange,
-        direction: direction, //
-        autoAdvance: autoAdvance);
+    stream = storeOpenKeyCursor(
+      idbObjectStore,
+      //
+      key: key, //
+      range: idbKeyRange,
+      direction: direction, //
+      autoAdvance: autoAdvance,
+    );
 
     final ctlr = CursorControllerNative(stream);
     return ctlr.stream;

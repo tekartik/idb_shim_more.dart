@@ -27,8 +27,11 @@ class ProviderIndexTransaction<K, V> extends Object
 
   late ProviderIndex _index;
   ProviderIndexTransaction(
-      Provider provider, String storeName, String indexName,
-      [bool readWrite = false]) //
+    Provider provider,
+    String storeName,
+    String indexName, [
+    bool readWrite = false,
+  ]) //
   {
     _store = ProviderStoreTransaction(provider, storeName, readWrite);
     _index = _store!.store!.index(indexName);
@@ -40,29 +43,39 @@ class ProviderIndexTransaction<K, V> extends Object
   @override
   Stream<CursorWithValue> openRawCursor({K? key, String? direction}) {
     return _index.index.openCursor(
-        //
-        key: key,
-        direction: direction);
+      //
+      key: key,
+      direction: direction,
+    );
   }
 
   // @override
   Stream<Cursor> openRawKeyCursor({K? key, String? direction}) {
     return _index.index.openKeyCursor(
-        //
-        key: key,
-        direction: direction);
+      //
+      key: key,
+      direction: direction,
+    );
   }
 
-  Stream<Cursor> openKeyCursor(
-      {K? key, bool reverse = false, int? limit, int? offset}) {
+  Stream<Cursor> openKeyCursor({
+    K? key,
+    bool reverse = false,
+    int? limit,
+    int? offset,
+  }) {
     final direction = reverse ? idbDirectionPrev : null;
     final stream = openRawKeyCursor(key: key, direction: direction);
     return _limitOffsetStream(stream, limit: limit, offset: offset);
   }
 
   //@override
-  Stream<CursorWithValue> openCursor(
-      {K? key, bool reverse = false, int? limit, int? offset}) {
+  Stream<CursorWithValue> openCursor({
+    K? key,
+    bool reverse = false,
+    int? limit,
+    int? offset,
+  }) {
     final direction = reverse ? idbDirectionPrev : null;
     final stream = openRawCursor(key: key, direction: direction);
     return _limitOffsetStream(stream, limit: limit, offset: offset);
@@ -71,8 +84,11 @@ class ProviderIndexTransaction<K, V> extends Object
 
 class RawProviderStoreTransaction
     extends ProviderStoreTransaction<Object, Object> {
-  RawProviderStoreTransaction(super.provider, super.storeName,
-      [super.readWrite]);
+  RawProviderStoreTransaction(
+    super.provider,
+    super.storeName, [
+    super.readWrite,
+  ]);
 }
 
 class ProviderStoreTransaction<K, V>
@@ -82,8 +98,9 @@ class ProviderStoreTransaction<K, V>
 
   @protected
   ProviderStoreTransaction.fromList(
-      ProviderTransactionList list, String storeName)
-      : super._() {
+    ProviderTransactionList list,
+    String storeName,
+  ) : super._() {
     _transaction = list._transaction;
     _mode = list._mode;
     _store = ProviderStore(_transaction!.objectStore(storeName));
@@ -125,8 +142,11 @@ mixin ProviderSourceTransactionMixin<K, V>
   Future<int> count();
   Stream<CursorWithValue> openRawCursor({String? direction});
 
-  Stream<T> _limitOffsetStream<T extends Cursor>(Stream<T> rawStream,
-      {int? limit, int? offset}) {
+  Stream<T> _limitOffsetStream<T extends Cursor>(
+    Stream<T> rawStream, {
+    int? limit,
+    int? offset,
+  }) {
     final ctlr = StreamController<T>(sync: true);
 
     var count = 0;
@@ -154,9 +174,12 @@ mixin ProviderSourceTransactionMixin<K, V>
       }
     }
 
-    rawStream.listen(onCursorValue, onDone: () {
-      close();
-    });
+    rawStream.listen(
+      onCursorValue,
+      onDone: () {
+        close();
+      },
+    );
 
     //}).asFuture() {
     return ctlr.stream;
@@ -185,8 +208,11 @@ class ProviderStoreTransactionBase<K, V> extends ProviderTransaction
 
   ProviderStoreTransactionBase._();
 
-  ProviderStoreTransactionBase(Provider provider, String storeName,
-      [bool readWrite = false]) {
+  ProviderStoreTransactionBase(
+    Provider provider,
+    String storeName, [
+    bool readWrite = false,
+  ]) {
     _mode = readWrite ? idbModeReadWrite : idbModeReadOnly;
 
     try {
@@ -204,12 +230,16 @@ class ProviderStoreTransactionBase<K, V> extends ProviderTransaction
   @override
   Stream<CursorWithValue> openRawCursor({String? direction}) {
     return store!.objectStore.openCursor(
-        //
-        direction: direction);
+      //
+      direction: direction,
+    );
   }
 
-  Stream<CursorWithValue> openCursor(
-      {bool reverse = false, int? limit, int? offset}) {
+  Stream<CursorWithValue> openCursor({
+    bool reverse = false,
+    int? limit,
+    int? offset,
+  }) {
     final direction = reverse ? idbDirectionPrev : null;
     final stream = openRawCursor(direction: direction);
     return _limitOffsetStream(stream, limit: limit, offset: offset);
@@ -221,7 +251,9 @@ mixin ProviderStoreTransactionMixin<K, V> {
 
   ProviderIndexTransaction<K, V> index(String name) =>
       ProviderIndexTransaction.fromStoreTransaction(
-          this as ProviderStoreTransaction<K, V>, name);
+        this as ProviderStoreTransaction<K, V>,
+        name,
+      );
 
   Future<int> count() => store!.count();
 
@@ -247,11 +279,16 @@ mixin ProviderStoreTransactionMixin<K, V> {
 //}
 
 class ProviderTransactionList extends ProviderTransaction {
-  ProviderTransactionList(Provider provider, Iterable<String> storeNames,
-      [bool readWrite = false]) {
+  ProviderTransactionList(
+    Provider provider,
+    Iterable<String> storeNames, [
+    bool readWrite = false,
+  ]) {
     _mode = readWrite ? idbModeReadWrite : idbModeReadOnly;
-    _transaction =
-        provider.db!.database!.transactionList(storeNames.toList(), _mode!);
+    _transaction = provider.db!.database!.transactionList(
+      storeNames.toList(),
+      _mode!,
+    );
   }
   ProviderStoreTransaction store(String storeName) {
     return ProviderStoreTransaction.fromList(this, storeName);
@@ -270,23 +307,23 @@ class ProviderTransaction {
   bool get readOnly => _mode == idbModeReadOnly;
   Future<void> get completed => _transaction!.completed;
 
-//
-//  Future<int> add(Map<String, dynamic> data) {
-//    if (_store != null) {
-//      return _store.add(data);
-//    }
-//    // should crash then
-//    return null;
-//  }
-//
-//  Future<Map<String, dynamic>> getById(int id) {
-//    if (_index != null) {
-//      return _index.get(id);
-//
-//    } else if (_store != null) {
-//      return _store.getObject(id);
-//    }
-//    // should crash then
-//    return null;
-//  }
+  //
+  //  Future<int> add(Map<String, dynamic> data) {
+  //    if (_store != null) {
+  //      return _store.add(data);
+  //    }
+  //    // should crash then
+  //    return null;
+  //  }
+  //
+  //  Future<Map<String, dynamic>> getById(int id) {
+  //    if (_index != null) {
+  //      return _index.get(id);
+  //
+  //    } else if (_store != null) {
+  //      return _store.getObject(id);
+  //    }
+  //    // should crash then
+  //    return null;
+  //  }
 }

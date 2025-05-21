@@ -16,11 +16,14 @@ final _store = 'values';
 var _database = () async {
   final factory = idbFactoryWebWorker;
   // equivalent to: factory = idbFactoryFromIndexedDB(scope.indexedDB);
-  return factory.open('idb_shim_web_worker_exp_db', version: 1,
-      onUpgradeNeeded: (VersionChangeEvent e) {
-    var db = e.database;
-    db.createObjectStore(_store);
-  });
+  return factory.open(
+    'idb_shim_web_worker_exp_db',
+    version: 1,
+    onUpgradeNeeded: (VersionChangeEvent e) {
+      var db = e.database;
+      db.createObjectStore(_store);
+    },
+  );
 }();
 void _handleMessageEvent(web.Event event) async {
   var messageEvent = event as web.MessageEvent;
@@ -39,8 +42,9 @@ void _handleMessageEvent(web.Event event) async {
         var key = data['key'] as String;
         var value = data['value'] as int?;
         var db = await _database;
-        var store =
-            db.transaction(_store, idbModeReadWrite).objectStore(_store);
+        var store = db
+            .transaction(_store, idbModeReadWrite)
+            .objectStore(_store);
         if (value != null) {
           await store.put(value, key);
         } else {
@@ -53,9 +57,11 @@ void _handleMessageEvent(web.Event event) async {
         var db = await _database;
         var store = db.transaction(_store, idbModeReadOnly).objectStore(_store);
         var value = await store.getObject(key);
-        port.postMessage({
-          'result': {'key': key, 'value': value}
-        }.jsify());
+        port.postMessage(
+          {
+            'result': {'key': key, 'value': value},
+          }.jsify(),
+        );
       } else {
         print('$command unknown');
         port.postMessage(null);
@@ -77,11 +83,12 @@ void main(List<String> args) {
   /// Handle basic web workers
   /// dirty hack
   try {
-    scope.onmessage = (web.MessageEvent event) {
-      zone.run(() {
-        _handleMessageEvent(event);
-      });
-    }.toJS;
+    scope.onmessage =
+        (web.MessageEvent event) {
+          zone.run(() {
+            _handleMessageEvent(event);
+          });
+        }.toJS;
   } catch (e) {
     print('onmessage error $e');
   }

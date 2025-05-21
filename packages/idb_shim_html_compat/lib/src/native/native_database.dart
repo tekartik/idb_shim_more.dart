@@ -38,8 +38,10 @@ class VersionChangeEventNative extends IdbVersionChangeEventBase {
       database = DatabaseNative(factory, currentTarget);
     } else if (currentTarget is idb.Request) {
       database = DatabaseNative(factory, currentTarget.result as idb.Database?);
-      final transaction =
-          TransactionNative(database, currentTarget.transaction!);
+      final transaction = TransactionNative(
+        database,
+        currentTarget.transaction!,
+      );
       request = OpenDBRequest(database, transaction);
     }
   }
@@ -54,11 +56,19 @@ class DatabaseNative extends IdbDatabaseBase {
   int get version => catchNativeError((() => idbDatabase!.version ?? 0));
 
   @override
-  ObjectStore createObjectStore(String name,
-      {Object? keyPath, bool? autoIncrement}) {
+  ObjectStore createObjectStore(
+    String name, {
+    Object? keyPath,
+    bool? autoIncrement,
+  }) {
     return catchNativeError(() {
-      return ObjectStoreNative(idbDatabase!.createObjectStore(name,
-          keyPath: keyPath, autoIncrement: autoIncrement));
+      return ObjectStoreNative(
+        idbDatabase!.createObjectStore(
+          name,
+          keyPath: keyPath,
+          autoIncrement: autoIncrement,
+        ),
+      );
     })!;
   }
 
@@ -72,8 +82,10 @@ class DatabaseNative extends IdbDatabaseBase {
     // simulate them!
     try {
       return catchNativeError(() {
-        final idbTransaction =
-            idbDatabase!.transaction(storeNameOrStoreNames, mode);
+        final idbTransaction = idbDatabase!.transaction(
+          storeNameOrStoreNames,
+          mode,
+        );
         return TransactionNative(this, idbTransaction);
       })!;
     } catch (e) {
@@ -101,9 +113,11 @@ class DatabaseNative extends IdbDatabaseBase {
             try {
               return catchNativeError(() {
                 final idbTransaction = idbDatabase!.transaction(
-                    html_common.convertDartToNative_SerializedScriptValue(
-                        storeNameOrStoreNames),
-                    mode);
+                  html_common.convertDartToNative_SerializedScriptValue(
+                    storeNameOrStoreNames,
+                  ),
+                  mode,
+                );
                 return TransactionNative(this, idbTransaction);
               })!;
             } catch (_) {}
@@ -156,13 +170,16 @@ class DatabaseNative extends IdbDatabaseBase {
   Stream<VersionChangeEvent> get onVersionChange {
     final ctlr = StreamController<VersionChangeEvent>();
     idbDatabase!.onVersionChange.listen(
-        (idb.VersionChangeEvent idbVersionChangeEvent) {
-      ctlr.add(VersionChangeEventNative(factory, idbVersionChangeEvent));
-    }, onDone: () {
-      ctlr.close();
-    }, onError: (Object error) {
-      ctlr.addError(error);
-    });
+      (idb.VersionChangeEvent idbVersionChangeEvent) {
+        ctlr.add(VersionChangeEventNative(factory, idbVersionChangeEvent));
+      },
+      onDone: () {
+        ctlr.close();
+      },
+      onError: (Object error) {
+        ctlr.addError(error);
+      },
+    );
     return ctlr.stream;
   }
 }

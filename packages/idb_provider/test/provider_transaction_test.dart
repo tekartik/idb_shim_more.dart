@@ -25,8 +25,13 @@ void testMain(TestContext context) {
       provider = DynamicProvider(idbFactory, ProviderDbMeta(context.dbName));
       return provider.delete().then((_) {
         final indexMeta = ProviderIndexMeta(indexName, indexKey);
-        provider.addStore(ProviderStoreMeta(storeName,
-            indecies: [indexMeta], autoIncrement: true));
+        provider.addStore(
+          ProviderStoreMeta(
+            storeName,
+            indecies: [indexMeta],
+            autoIncrement: true,
+          ),
+        );
         return provider.ready;
       });
     }
@@ -55,7 +60,7 @@ void testMain(TestContext context) {
       await txn.completed;
       expect(data, [
         {'value': 'value1'},
-        {'value': 'value2'}
+        {'value': 'value2'},
       ]);
     });
 
@@ -90,6 +95,7 @@ void testMain(TestContext context) {
     });
   });
 }
+
 //class TestApp extends ConsoleApp {
 //
 //}

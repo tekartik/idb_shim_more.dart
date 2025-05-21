@@ -11,8 +11,12 @@ idb.KeyRange? toNativeKeyRange(KeyRange? common) {
   }
   if (common.lower != null) {
     if (common.upper != null) {
-      return idb.KeyRange.bound(common.lower, common.upper,
-          common.lowerOpen == true, common.upperOpen == true);
+      return idb.KeyRange.bound(
+        common.lower,
+        common.upper,
+        common.lowerOpen == true,
+        common.upperOpen == true,
+      );
     } else {
       return idb.KeyRange.lowerBound(common.lower, common.lowerOpen == true);
     }

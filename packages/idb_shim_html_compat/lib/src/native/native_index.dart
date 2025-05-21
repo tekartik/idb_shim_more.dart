@@ -60,25 +60,39 @@ class IndexNative extends Index {
   }
 
   @override
-  Stream<Cursor> openKeyCursor(
-      {key, KeyRange? range, String? direction, bool? autoAdvance}) {
-    final ctlr = CursorControllerNative(idbIndex.openKeyCursor(
+  Stream<Cursor> openKeyCursor({
+    key,
+    KeyRange? range,
+    String? direction,
+    bool? autoAdvance,
+  }) {
+    final ctlr = CursorControllerNative(
+      idbIndex.openKeyCursor(
         key: key,
         range: range == null ? null : toNativeKeyRange(range),
         direction: direction,
-        autoAdvance: autoAdvance));
+        autoAdvance: autoAdvance,
+      ),
+    );
     return ctlr.stream;
   }
 
   /// Same implementation than for the Store
   @override
-  Stream<CursorWithValue> openCursor(
-      {key, KeyRange? range, String? direction, bool? autoAdvance}) {
-    final ctlr = CursorWithValueControllerNative(idbIndex.openCursor(
+  Stream<CursorWithValue> openCursor({
+    key,
+    KeyRange? range,
+    String? direction,
+    bool? autoAdvance,
+  }) {
+    final ctlr = CursorWithValueControllerNative(
+      idbIndex.openCursor(
         key: key,
         range: range == null ? null : toNativeKeyRange(range),
         direction: direction,
-        autoAdvance: autoAdvance));
+        autoAdvance: autoAdvance,
+      ),
+    );
 
     return ctlr.stream;
   }

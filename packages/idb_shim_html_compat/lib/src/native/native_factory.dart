@@ -54,10 +54,12 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
   String get name => idbFactoryNameNative;
 
   @override
-  Future<Database> open(String dbName,
-      {int? version,
-      OnUpgradeNeededFunction? onUpgradeNeeded,
-      OnBlockedFunction? onBlocked}) {
+  Future<Database> open(
+    String dbName, {
+    int? version,
+    OnUpgradeNeededFunction? onUpgradeNeeded,
+    OnBlockedFunction? onBlocked,
+  }) {
     FutureOr? onUpdateNeededFutureOr;
     Object? onUpdateNeededException;
     void openOnUpgradeNeeded(idb.VersionChangeEvent e) {
@@ -80,34 +82,39 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
     }
 
     return nativeFactory
-        .open(dbName,
-            version: version,
-            onUpgradeNeeded:
-                onUpgradeNeeded == null ? null : openOnUpgradeNeeded,
-            onBlocked: onBlocked == null && onUpgradeNeeded == null
-                ? null
-                : openOnBlocked)
+        .open(
+          dbName,
+          version: version,
+          onUpgradeNeeded: onUpgradeNeeded == null ? null : openOnUpgradeNeeded,
+          onBlocked:
+              onBlocked == null && onUpgradeNeeded == null
+                  ? null
+                  : openOnBlocked,
+        )
         .then((idb.Database database) async {
-      // Handle exception in onUpgradeNeeded
-      if (onUpdateNeededFutureOr is Future && onUpdateNeededException == null) {
-        try {
-          await onUpdateNeededFutureOr;
-        } catch (e) {
-          onUpdateNeededException = e;
-        }
-      }
-      if (onUpdateNeededException != null) {
-        database.close();
-        throw onUpdateNeededException!;
-      }
+          // Handle exception in onUpgradeNeeded
+          if (onUpdateNeededFutureOr is Future &&
+              onUpdateNeededException == null) {
+            try {
+              await onUpdateNeededFutureOr;
+            } catch (e) {
+              onUpdateNeededException = e;
+            }
+          }
+          if (onUpdateNeededException != null) {
+            database.close();
+            throw onUpdateNeededException!;
+          }
 
-      return DatabaseNative(this, database);
-    });
+          return DatabaseNative(this, database);
+        });
   }
 
   @override
-  Future<IdbFactory> deleteDatabase(String dbName,
-      {OnBlockedFunction? onBlocked}) {
+  Future<IdbFactory> deleteDatabase(
+    String dbName, {
+    OnBlockedFunction? onBlocked,
+  }) {
     void openOnBlocked(html.Event e) {
       if (isDebug) {
         idbLog('blocked deleting $dbName');
@@ -117,11 +124,13 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
     }
 
     return nativeFactory
-        .deleteDatabase(dbName,
-            onBlocked: onBlocked == null ? null : openOnBlocked)
+        .deleteDatabase(
+          dbName,
+          onBlocked: onBlocked == null ? null : openOnBlocked,
+        )
         .then((_) {
-      return this;
-    });
+          return this;
+        });
   }
 
   @override

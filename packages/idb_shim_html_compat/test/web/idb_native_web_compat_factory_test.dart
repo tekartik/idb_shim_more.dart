@@ -27,8 +27,8 @@ void main() {
             1,
             2,
             {
-              'sub2': [3, 4]
-            }
+              'sub2': [3, 4],
+            },
           ],
         },
         'string': 'text',
@@ -43,15 +43,19 @@ void main() {
           db.createObjectStore(testStoreName);
         }
 
-        var db = await factory1.open(dbName,
-            version: 1, onUpgradeNeeded: onUpgradeNeeded);
+        var db = await factory1.open(
+          dbName,
+          version: 1,
+          onUpgradeNeeded: onUpgradeNeeded,
+        );
         var key = 1;
         expect(
-            await db
-                .transaction(testStoreName, idbModeReadOnly)
-                .objectStore(testStoreName)
-                .getObject(key),
-            isNull);
+          await db
+              .transaction(testStoreName, idbModeReadOnly)
+              .objectStore(testStoreName)
+              .getObject(key),
+          isNull,
+        );
         await db
             .transaction(testStoreName, idbModeReadWrite)
             .objectStore(testStoreName)
@@ -60,11 +64,12 @@ void main() {
         db = await factory2.open(dbName);
 
         expect(
-            await db
-                .transaction(testStoreName, idbModeReadOnly)
-                .objectStore(testStoreName)
-                .getObject(key),
-            value);
+          await db
+              .transaction(testStoreName, idbModeReadOnly)
+              .objectStore(testStoreName)
+              .getObject(key),
+          value,
+        );
         db.close();
       }
 

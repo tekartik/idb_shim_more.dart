@@ -15,8 +15,11 @@ void main() {
         db.createObjectStore('store', autoIncrement: true);
       }
 
-      final db = await window.indexedDB!
-          .open(dbName, version: 1, onUpgradeNeeded: setupDb);
+      final db = await window.indexedDB!.open(
+        dbName,
+        version: 1,
+        onUpgradeNeeded: setupDb,
+      );
 
       final transaction = db.transaction('store', 'readwrite');
       var objectStore = transaction.objectStore('store');

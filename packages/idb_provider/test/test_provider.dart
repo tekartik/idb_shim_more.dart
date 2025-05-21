@@ -22,8 +22,10 @@ class TestProvider extends Provider {
     if (e.oldVersion < dbVersion) {
       // delete stuff
     }
-    var objectStore =
-        database!.createObjectStore(itemsStore, autoIncrement: true);
+    var objectStore = database!.createObjectStore(
+      itemsStore,
+      autoIncrement: true,
+    );
     objectStore.createIndex(nameIndex, nameField, unique: false);
   }
 
@@ -56,8 +58,11 @@ class TestProvider extends Provider {
   }
 
   Future<List<String?>> getOrderedNames({int? limit, int? offset}) {
-    var trans =
-        ProviderIndexTransaction<Object?, Object?>(this, itemsStore, nameIndex);
+    var trans = ProviderIndexTransaction<Object?, Object?>(
+      this,
+      itemsStore,
+      nameIndex,
+    );
 
     final names = <String?>[];
     return trans

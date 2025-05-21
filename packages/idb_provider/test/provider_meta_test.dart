@@ -17,65 +17,101 @@ void testMain(TestContext context) {
         final indexMeta2 = ProviderIndexMeta('idx', 'my_key');
         expect(indexMeta, indexMeta2);
         expect(
-            indexMeta,
-            ProviderIndexMeta('idx', 'my_key',
-                unique: false, multiEntry: false));
+          indexMeta,
+          ProviderIndexMeta('idx', 'my_key', unique: false, multiEntry: false),
+        );
         expect(
-            indexMeta,
-            isNot(ProviderIndexMeta('idx', 'my_key',
-                unique: false, multiEntry: true)));
+          indexMeta,
+          isNot(
+            ProviderIndexMeta('idx', 'my_key', unique: false, multiEntry: true),
+          ),
+        );
         expect(
-            indexMeta,
-            isNot(ProviderIndexMeta('idx', 'my_key',
-                unique: true, multiEntry: false)));
+          indexMeta,
+          isNot(
+            ProviderIndexMeta('idx', 'my_key', unique: true, multiEntry: false),
+          ),
+        );
         expect(
-            indexMeta,
-            isNot(ProviderIndexMeta('idx', 'my_key2',
-                unique: false, multiEntry: false)));
+          indexMeta,
+          isNot(
+            ProviderIndexMeta(
+              'idx',
+              'my_key2',
+              unique: false,
+              multiEntry: false,
+            ),
+          ),
+        );
         expect(
-            indexMeta,
-            isNot(ProviderIndexMeta('idx2', 'my_key',
-                unique: false, multiEntry: false)));
+          indexMeta,
+          isNot(
+            ProviderIndexMeta(
+              'idx2',
+              'my_key',
+              unique: false,
+              multiEntry: false,
+            ),
+          ),
+        );
       });
 
       test('store', () {
         var storeMeta = ProviderStoreMeta('str');
         expect(storeMeta, ProviderStoreMeta('str'));
         expect(storeMeta, isNot(ProviderStoreMeta('str2')));
-        expect(storeMeta,
-            ProviderStoreMeta('str', keyPath: null, autoIncrement: false));
         expect(
-            storeMeta,
-            isNot(
-                ProviderStoreMeta('str', keyPath: null, autoIncrement: true)));
+          storeMeta,
+          ProviderStoreMeta('str', keyPath: null, autoIncrement: false),
+        );
         expect(
-            storeMeta,
-            isNot(ProviderStoreMeta('str',
-                keyPath: 'some', autoIncrement: false)));
+          storeMeta,
+          isNot(ProviderStoreMeta('str', keyPath: null, autoIncrement: true)),
+        );
         expect(
-            storeMeta,
-            isNot(ProviderStoreMeta('str2',
-                keyPath: null, autoIncrement: false)));
+          storeMeta,
+          isNot(
+            ProviderStoreMeta('str', keyPath: 'some', autoIncrement: false),
+          ),
+        );
+        expect(
+          storeMeta,
+          isNot(ProviderStoreMeta('str2', keyPath: null, autoIncrement: false)),
+        );
 
-        storeMeta =
-            ProviderStoreMeta('str', keyPath: 'some', autoIncrement: true);
-        var storeMeta2 =
-            ProviderStoreMeta('str', keyPath: 'some', autoIncrement: true);
+        storeMeta = ProviderStoreMeta(
+          'str',
+          keyPath: 'some',
+          autoIncrement: true,
+        );
+        var storeMeta2 = ProviderStoreMeta(
+          'str',
+          keyPath: 'some',
+          autoIncrement: true,
+        );
         expect(storeMeta, storeMeta2);
         final indexMeta = ProviderIndexMeta('idx', 'my_key');
         final indexMeta2 = ProviderIndexMeta('idx', 'my_key');
 
-        storeMeta = ProviderStoreMeta('str',
-            keyPath: 'some', autoIncrement: true, indecies: [indexMeta]);
+        storeMeta = ProviderStoreMeta(
+          'str',
+          keyPath: 'some',
+          autoIncrement: true,
+          indecies: [indexMeta],
+        );
         expect(storeMeta, isNot(storeMeta2));
-        storeMeta = ProviderStoreMeta('str',
-            keyPath: 'some',
-            autoIncrement: true,
-            indecies: [indexMeta, indexMeta2]);
-        storeMeta2 = ProviderStoreMeta('str',
-            keyPath: 'some',
-            autoIncrement: true,
-            indecies: [indexMeta2, indexMeta]);
+        storeMeta = ProviderStoreMeta(
+          'str',
+          keyPath: 'some',
+          autoIncrement: true,
+          indecies: [indexMeta, indexMeta2],
+        );
+        storeMeta2 = ProviderStoreMeta(
+          'str',
+          keyPath: 'some',
+          autoIncrement: true,
+          indecies: [indexMeta2, indexMeta],
+        );
         expect(storeMeta, storeMeta2);
       });
 
@@ -132,7 +168,7 @@ void testMain(TestContext context) {
         test('one_store round_cirle', () {
           final meta = ProviderStoresMeta([
             //)
-            ProviderStoreMeta('store')
+            ProviderStoreMeta('store'),
           ]);
           return roundCircle(meta);
         });
@@ -142,11 +178,12 @@ void testMain(TestContext context) {
           return provider.ready!.then((Provider readyProvider) {
             return provider.storesMeta!.then((metas) {
               expect(
-                  metas,
-                  ProviderStoresMeta([
-                    ProviderStoreMeta('store'),
-                    ProviderStoreMeta('store1')
-                  ]));
+                metas,
+                ProviderStoresMeta([
+                  ProviderStoreMeta('store'),
+                  ProviderStoreMeta('store1'),
+                ]),
+              );
             });
           });
         });
@@ -154,9 +191,11 @@ void testMain(TestContext context) {
         test('one_index', () {
           final meta = ProviderStoresMeta([
             //)
-            ProviderStoreMeta('store', indecies: //
-                    [ProviderIndexMeta('idx', 'my_key')] //
-                )
+            ProviderStoreMeta(
+              'store',
+              indecies: //
+                  [ProviderIndexMeta('idx', 'my_key')], //
+            ),
           ]);
           return roundCircle(meta);
         });
@@ -164,6 +203,7 @@ void testMain(TestContext context) {
     });
   });
 }
+
 //class TestApp extends ConsoleApp {
 //
 //}

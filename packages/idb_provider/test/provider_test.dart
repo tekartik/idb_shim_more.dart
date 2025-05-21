@@ -37,13 +37,16 @@ void testMain(TestContext context) {
 
           return txn.put({'test': 1}).then((key) {
             return txn.get(key).then((value) {
-              final row =
-                  intMapProviderRawFactory.newRow(key as int, value as Map);
+              final row = intMapProviderRawFactory.newRow(
+                key as int,
+                value as Map,
+              );
 
               // Cursor
               txn.openCursor().listen((cwv) {
-                final cursorRow =
-                    intMapProviderRawFactory.cursorWithValueRow(cwv);
+                final cursorRow = intMapProviderRawFactory.cursorWithValueRow(
+                  cwv,
+                );
                 expect(cursorRow, row);
               });
             });
@@ -57,24 +60,27 @@ void testMain(TestContext context) {
       // open normal
       final provider = TestProvider(idbFactory);
       final provider2 = TestProvider(idbFactory);
-      await provider.delete().then((_) {
-        expect(provider.isReady, isFalse);
-        final done = provider.ready!.then((readyProvider) {
-          expect(readyProvider, provider);
-        });
-        // not ready yet when opening the db
-        expect(provider.isReady, isFalse);
-        return done;
-      }).then((_) {
-        // open using an incoming db
-        expect(provider2.isReady, isFalse);
-        provider2.db = provider.db;
-        expect(provider2.isReady, isTrue);
-        final done = provider2.ready!.then((readyProvider2) {
-          expect(readyProvider2, provider2);
-        });
-        return done;
-      });
+      await provider
+          .delete()
+          .then((_) {
+            expect(provider.isReady, isFalse);
+            final done = provider.ready!.then((readyProvider) {
+              expect(readyProvider, provider);
+            });
+            // not ready yet when opening the db
+            expect(provider.isReady, isFalse);
+            return done;
+          })
+          .then((_) {
+            // open using an incoming db
+            expect(provider2.isReady, isFalse);
+            provider2.db = provider.db;
+            expect(provider2.isReady, isTrue);
+            final done = provider2.ready!.then((readyProvider2) {
+              expect(readyProvider2, provider2);
+            });
+            return done;
+          });
 
       provider.close();
     });
@@ -117,16 +123,19 @@ void testMain(TestContext context) {
     test('get/put', () {
       return provider.getName(1).then((data) {
         expect(data, isNull);
-        return provider.putName('test').then((int key) {
-          expect(key, 1);
-          return provider.getName(key).then((String? name) {
-            expect(name, 'test');
-          });
-        }).then((_) {
-          return provider.count().then((count) {
-            expect(count, 1);
-          });
-        });
+        return provider
+            .putName('test')
+            .then((int key) {
+              expect(key, 1);
+              return provider.getName(key).then((String? name) {
+                expect(name, 'test');
+              });
+            })
+            .then((_) {
+              return provider.count().then((count) {
+                expect(count, 1);
+              });
+            });
       });
     });
 
@@ -135,9 +144,10 @@ void testMain(TestContext context) {
       var count = 0;
       return trans.store!.objectStore
           .openCursor(
-              //
-              direction: idbDirectionNext,
-              autoAdvance: false)
+            //
+            direction: idbDirectionNext,
+            autoAdvance: false,
+          )
           .listen((CursorWithValue cwv) {
             count++;
           })
@@ -161,41 +171,50 @@ void testMain(TestContext context) {
       int a2;
       int b3;
       */
-      return provider.getNames().then((var list) {
-        expect(list, isEmpty);
-      }).then((_) {
-        return provider.putName(c1).then((int key) {
-          //c1 = key;
-        });
-      }).then((_) {
-        return provider.getNames().then((var list) {
-          expect(list, [c1]);
-          //expect(list.first, C1);
-        });
-      }).then((_) {
-        return provider.putName(a2).then((int key) {
-          //a2 = key;
-        });
-      }).then((_) {
-        return provider.putName(b3).then((int key) {
-          //b3 = key;
-        });
-      }).then((_) {
-        return provider.getNames().then((var list) {
-          expect(list, [c1, a2, b3]);
-          //expect(list.first, C1);
-        });
-      }).then((_) {
-        return provider.getNames(limit: 2).then((var list) {
-          expect(list, [c1, a2]);
-          //expect(list.first, C1);
-        });
-      }).then((_) {
-        return provider.getOrderedNames().then((var list) {
-          expect(list, [a2, b3, c1]);
-          //expect(list.first, C1);
-        });
-      });
+      return provider
+          .getNames()
+          .then((var list) {
+            expect(list, isEmpty);
+          })
+          .then((_) {
+            return provider.putName(c1).then((int key) {
+              //c1 = key;
+            });
+          })
+          .then((_) {
+            return provider.getNames().then((var list) {
+              expect(list, [c1]);
+              //expect(list.first, C1);
+            });
+          })
+          .then((_) {
+            return provider.putName(a2).then((int key) {
+              //a2 = key;
+            });
+          })
+          .then((_) {
+            return provider.putName(b3).then((int key) {
+              //b3 = key;
+            });
+          })
+          .then((_) {
+            return provider.getNames().then((var list) {
+              expect(list, [c1, a2, b3]);
+              //expect(list.first, C1);
+            });
+          })
+          .then((_) {
+            return provider.getNames(limit: 2).then((var list) {
+              expect(list, [c1, a2]);
+              //expect(list.first, C1);
+            });
+          })
+          .then((_) {
+            return provider.getOrderedNames().then((var list) {
+              expect(list, [a2, b3, c1]);
+              //expect(list.first, C1);
+            });
+          });
     });
 
     test('put/clear/get', () {
@@ -210,6 +229,7 @@ void testMain(TestContext context) {
     });
   });
 }
+
 //class TestApp extends ConsoleApp {
 //
 //}

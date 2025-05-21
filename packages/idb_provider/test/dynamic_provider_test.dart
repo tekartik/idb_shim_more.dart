@@ -17,30 +17,32 @@ void testMain(TestContext context) {
       test('database', () {
         final provider = DynamicProvider(idbFactory, ProviderDbMeta('test'));
 
-        return provider
-            .delete()
-            .then((_) => provider.ready!.then((Provider readyProvider) {
-                  expect(provider, readyProvider);
-                  expect(provider.db!.meta!.name, 'test');
-                  expect(provider.db!.meta!.version, 1);
-                  expect(provider.db!.storeNames, isEmpty);
-                  provider.close();
-                }));
+        return provider.delete().then(
+          (_) => provider.ready!.then((Provider readyProvider) {
+            expect(provider, readyProvider);
+            expect(provider.db!.meta!.name, 'test');
+            expect(provider.db!.meta!.version, 1);
+            expect(provider.db!.storeNames, isEmpty);
+            provider.close();
+          }),
+        );
       });
 
       test('database name version', () {
-        final provider =
-            DynamicProvider(idbFactory, ProviderDbMeta('test2', 2));
+        final provider = DynamicProvider(
+          idbFactory,
+          ProviderDbMeta('test2', 2),
+        );
 
-        return provider
-            .delete()
-            .then((_) => provider.ready!.then((Provider readyProvider) {
-                  expect(provider, readyProvider);
-                  expect(provider.db!.meta!.name, 'test2');
-                  expect(provider.db!.meta!.version, 2);
-                  expect(provider.db!.storeNames, isEmpty);
-                  provider.close();
-                }));
+        return provider.delete().then(
+          (_) => provider.ready!.then((Provider readyProvider) {
+            expect(provider, readyProvider);
+            expect(provider.db!.meta!.name, 'test2');
+            expect(provider.db!.meta!.version, 2);
+            expect(provider.db!.storeNames, isEmpty);
+            provider.close();
+          }),
+        );
       });
     });
   });
@@ -79,7 +81,8 @@ void testMain(TestContext context) {
 
     test('multiple_store', () {
       provider.addStore(
-          ProviderStoreMeta('store', keyPath: 'key', autoIncrement: true));
+        ProviderStoreMeta('store', keyPath: 'key', autoIncrement: true),
+      );
       provider.addStore(ProviderStoreMeta('store2'));
       return provider.ready!.then((Provider readyProvider) {
         final txn = provider.transactionList(['store', 'store2']);
@@ -97,7 +100,7 @@ void testMain(TestContext context) {
 
         expect(txn2.store!.meta!.indecies, isEmpty);
 
-// for cleanup
+        // for cleanup
         transaction = txn;
       });
     });
@@ -119,6 +122,7 @@ void testMain(TestContext context) {
     });
   });
 }
+
 //class TestApp extends ConsoleApp {
 //
 //}

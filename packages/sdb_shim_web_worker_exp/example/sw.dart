@@ -16,11 +16,14 @@ final _store = SdbStoreRef<String, int>('values');
 var _database = () async {
   final factory = sdbFactoryWebWorker;
   // equivalent to: factory = idbFactoryFromIndexedDB(scope.indexedDB);
-  return factory.openDatabase('sdb_shim_web_worker_exp_db', version: 1,
-      onVersionChange: (SdbVersionChangeEvent e) {
-    var db = e.db;
-    db.createStore(_store);
-  });
+  return factory.openDatabase(
+    'sdb_shim_web_worker_exp_db',
+    version: 1,
+    onVersionChange: (SdbVersionChangeEvent e) {
+      var db = e.db;
+      db.createStore(_store);
+    },
+  );
 }();
 void _handleMessageEvent(web.Event event) async {
   var messageEvent = event as web.MessageEvent;
@@ -53,9 +56,11 @@ void _handleMessageEvent(web.Event event) async {
         var db = await _database;
         var record = _store.record(key);
         var value = await record.getValue(db);
-        port.postMessage({
-          'result': {'key': key, 'value': value}
-        }.jsify());
+        port.postMessage(
+          {
+            'result': {'key': key, 'value': value},
+          }.jsify(),
+        );
       } else {
         print('$command unknown');
         port.postMessage(null);
@@ -77,11 +82,12 @@ void main(List<String> args) {
   /// Handle basic web workers
   /// dirty hack
   try {
-    scope.onmessage = (web.MessageEvent event) {
-      zone.run(() {
-        _handleMessageEvent(event);
-      });
-    }.toJS;
+    scope.onmessage =
+        (web.MessageEvent event) {
+          zone.run(() {
+            _handleMessageEvent(event);
+          });
+        }.toJS;
   } catch (e) {
     print('onmessage error $e');
   }

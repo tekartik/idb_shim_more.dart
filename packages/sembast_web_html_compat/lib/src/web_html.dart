@@ -1,6 +1,5 @@
 import 'dart:async';
 // ignore: deprecated_member_use
-import 'dart:html';
 
 import 'package:idb_shim/idb_client_native_html.dart';
 // ignore: implementation_imports
@@ -9,6 +8,9 @@ import 'package:sembast_web/src/jdb_factory_idb.dart';
 import 'package:sembast_web/src/jdb_import.dart';
 // ignore: implementation_imports
 import 'package:sembast_web/src/web_defs.dart';
+// ignore: implementation_imports
+import 'package:sembast_web/src/web_interop.dart'
+    show addNotificationRevision, notificationRevisionStream;
 
 /// The native jdb factory
 var jdbFactoryIdbNative = JdbFactoryWeb();
@@ -27,10 +29,12 @@ class JdbFactoryWeb extends JdbFactoryIdb {
   @override
   void start() {
     stop();
-    _revisionSubscription = storageRevisionStream.listen((storageRevision) {
-      var list = databases[storageRevision.name]!;
+    _revisionSubscription = notificationRevisionStream.listen((
+      notificationRevision,
+    ) {
+      var list = databases[notificationRevision.name]!;
       for (var jdbDatabase in list) {
-        jdbDatabase.addRevision(storageRevision.revision);
+        jdbDatabase.addRevision(notificationRevision.revision);
       }
     });
   }
@@ -43,8 +47,8 @@ class JdbFactoryWeb extends JdbFactoryIdb {
 
   /// Notify other app (web only))
   @override
-  void notifyRevision(StorageRevision storageRevision) {
-    addStorageRevision(storageRevision);
+  void notifyRevision(NotificationRevision notificationRevision) {
+    addNotificationRevision(notificationRevision);
   }
 }
 
@@ -52,46 +56,4 @@ class JdbFactoryWeb extends JdbFactoryIdb {
 class DatabaseFactoryWeb extends DatabaseFactoryJdb {
   /// Web factory.
   DatabaseFactoryWeb() : super(jdbFactoryIdbNative);
-}
-
-String _sembastStorageKeyPrefix = 'sembast_web/revision:';
-
-/// add a storage revision
-void addStorageRevision(StorageRevision storageRevision) {
-  if (debugStorageNotification) {
-    // ignore: avoid_print
-    print('adding storage revision $storageRevision');
-  }
-  var key = '$_sembastStorageKeyPrefix${storageRevision.name}';
-  if (storageRevision.revision != 0) {
-    window.localStorage[key] = storageRevision.revision.toString();
-  } else {
-    window.localStorage.remove(key);
-  }
-}
-
-/// Storage revision notification from all tabs
-Stream<StorageRevision> get storageRevisionStream {
-  StreamSubscription? storageEventSubscription;
-  late StreamController<StorageRevision> ctlr;
-  ctlr = StreamController<StorageRevision>(
-    onListen: () {
-      storageEventSubscription = window.onStorage.listen((event) {
-        if (debugStorageNotification) {
-          // ignore: avoid_print
-          print('getting ${event.key}: ${event.newValue}');
-        }
-        if (event.key!.startsWith(_sembastStorageKeyPrefix)) {
-          var name = event.key!.substring(_sembastStorageKeyPrefix.length);
-          var revision =
-              event.newValue == null ? 0 : (int.tryParse(event.newValue!) ?? 0);
-          ctlr.add(StorageRevision(name, revision));
-        }
-      });
-    },
-    onCancel: () {
-      storageEventSubscription?.cancel();
-    },
-  );
-  return ctlr.stream;
 }

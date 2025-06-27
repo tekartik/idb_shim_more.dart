@@ -31,14 +31,13 @@ Future<Object?> sendRawMessage(Object message) {
   //var receivePort =ReceivePort();
 
   final zone = Zone.current;
-  messageChannel.port1.onmessage =
-      (web.MessageEvent event) {
-        zone.run(() {
-          var data = event.data.dartify();
+  messageChannel.port1.onmessage = (web.MessageEvent event) {
+    zone.run(() {
+      var data = event.data.dartify();
 
-          completer.complete(data);
-        });
-      }.toJS;
+      completer.complete(data);
+    });
+  }.toJS;
 
   // This sends the message data as well as transferring messageChannel.port2 to the worker.
   // The worker can then use the transferred port to reply via postMessage(), which

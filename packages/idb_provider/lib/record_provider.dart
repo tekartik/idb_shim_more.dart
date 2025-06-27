@@ -237,10 +237,9 @@ class DbRecordProviderWriteTransaction<T extends DbRecordBase, K>
   }
 
   // ignore: avoid_shadowing_type_parameters
-  Future<K> _throwError<K>() async =>
-      throw UnsupportedError(
-        'use putRecord, deleteRecord and clearRecords API',
-      );
+  Future<K> _throwError<K>() async => throw UnsupportedError(
+    'use putRecord, deleteRecord and clearRecords API',
+  );
 
   @Deprecated('not supported, use record API')
   @override

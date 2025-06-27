@@ -247,11 +247,10 @@ void testMain(TestContext context) {
         var txn = appProvider.basic.storeReadTransaction;
         var stream = txn.openCursor(limit: 1);
         await stream.listen((CursorWithValue cwv) {
-          final record =
-              DbBasicRecord.fromDbEntry(
-                cwv.value as Map,
-                cwv.primaryKey as String,
-              )!;
+          final record = DbBasicRecord.fromDbEntry(
+            cwv.value as Map,
+            cwv.primaryKey as String,
+          )!;
           expect(record.id, '_1');
         }).asFuture<void>();
 
@@ -297,10 +296,9 @@ void testMain(TestContext context) {
         record.name = 'test';
         record.id = '_1';
 
-        var key =
-            (await (txn as DbRecordProviderWriteTransaction).putRecord(
-              record,
-            )).id;
+        var key = (await (txn as DbRecordProviderWriteTransaction).putRecord(
+          record,
+        )).id;
         expect(key, '_1');
         expect((await appProvider.basic.txnGet(txn, '_1'))!.id, '_1');
         await txn.completed;
@@ -308,11 +306,10 @@ void testMain(TestContext context) {
         txn = appProvider.basic.storeReadTransaction;
         var stream = txn.openCursor(limit: 1);
         await stream.listen((CursorWithValue cwv) {
-          final record =
-              DbBasicRecord.fromDbEntry(
-                cwv.value as Map,
-                cwv.primaryKey as String,
-              )!;
+          final record = DbBasicRecord.fromDbEntry(
+            cwv.value as Map,
+            cwv.primaryKey as String,
+          )!;
           expect(record.id, '_1');
         }).asFuture<void>();
 
@@ -354,10 +351,9 @@ void testMain(TestContext context) {
         record.name = 'test';
         record.id = '_1';
 
-        var key =
-            (await (txn as DbRecordProviderWriteTransaction).putRecord(
-              record,
-            )).id;
+        var key = (await (txn as DbRecordProviderWriteTransaction).putRecord(
+          record,
+        )).id;
 
         txn = appProvider.basic.readTransaction;
         var index = txn.index(dbFieldName);

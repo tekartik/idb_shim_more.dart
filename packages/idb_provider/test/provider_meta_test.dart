@@ -194,7 +194,9 @@ void testMain(TestContext context) {
             ProviderStoreMeta(
               'store',
               indecies: //
-                  [ProviderIndexMeta('idx', 'my_key')], //
+              [
+                ProviderIndexMeta('idx', 'my_key'),
+              ], //
             ),
           ]);
           return roundCircle(meta);

@@ -82,12 +82,11 @@ void main(List<String> args) {
   /// Handle basic web workers
   /// dirty hack
   try {
-    scope.onmessage =
-        (web.MessageEvent event) {
-          zone.run(() {
-            _handleMessageEvent(event);
-          });
-        }.toJS;
+    scope.onmessage = (web.MessageEvent event) {
+      zone.run(() {
+        _handleMessageEvent(event);
+      });
+    }.toJS;
   } catch (e) {
     print('onmessage error $e');
   }

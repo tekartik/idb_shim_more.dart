@@ -86,10 +86,9 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
           dbName,
           version: version,
           onUpgradeNeeded: onUpgradeNeeded == null ? null : openOnUpgradeNeeded,
-          onBlocked:
-              onBlocked == null && onUpgradeNeeded == null
-                  ? null
-                  : openOnBlocked,
+          onBlocked: onBlocked == null && onUpgradeNeeded == null
+              ? null
+              : openOnBlocked,
         )
         .then((idb.Database database) async {
           // Handle exception in onUpgradeNeeded

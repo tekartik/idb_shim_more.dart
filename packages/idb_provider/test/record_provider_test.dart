@@ -330,9 +330,7 @@ void testMain(TestContext context) {
 
         txn = appProvider.basic.txnListWriteTransaction(writeTxnList);
         expect((await appProvider.basic.txnGet(txn, '_1'))!.id, '_1');
-        await appProvider.basic.txnClear(
-          txn as DbRecordProviderWriteTransaction,
-        );
+        await appProvider.basic.txnClear(txn);
         expect((await appProvider.basic.txnGet(txn, '_1')), isNull);
 
         await txnList.completed;

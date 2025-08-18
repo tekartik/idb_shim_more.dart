@@ -308,10 +308,7 @@ void testMain(TestContext context) {
           txnList as DbRecordProviderWriteTransactionList,
         );
         expect((await appProvider.basic.txnGet(txn, '_1'))!.id, '_1');
-        await appProvider.basic.txnClear(
-          txn as DbRecordProviderWriteTransaction,
-          syncing: true,
-        );
+        await appProvider.basic.txnClear(txn, syncing: true);
         expect((await appProvider.basic.txnGet(txn, '_1')), isNull);
 
         await txnList.completed;
@@ -369,10 +366,7 @@ void testMain(TestContext context) {
           txnList as DbRecordProviderWriteTransactionList,
         );
         expect((await appProvider.basic.txnGet(txn, '_1'))!.id, '_1');
-        await appProvider.basic.txnClear(
-          txn as DbRecordProviderWriteTransaction,
-          syncing: true,
-        );
+        await appProvider.basic.txnClear(txn, syncing: true);
         expect((await appProvider.basic.txnGet(txn, '_1')), isNull);
 
         await txnList.completed;

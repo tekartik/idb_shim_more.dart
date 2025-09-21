@@ -12,5 +12,4 @@ dependencies:
     git:
       url: https://github.com/tekartik/idb_shim_more.dart
       path: packages/idb_provider
-      ref: dart3a
 ```

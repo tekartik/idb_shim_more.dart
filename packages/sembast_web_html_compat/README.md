@@ -10,6 +10,5 @@ dependencies:
     git:
       url: https://github.com/tekartik/idb_shim_more.dart
       path: packages/sembast_web_html_compat
-      ref: dart3a
     version: '>=0.3.3'
 ```

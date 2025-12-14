@@ -61,6 +61,10 @@ class TransactionNative extends TransactionNativeBase {
       idbTransaction.abort();
     });
   }
+
+  @override
+  Iterable<String> get objectStoreNames =>
+      idbTransaction.objectStoreNames ?? const <String>[];
 }
 
 //
@@ -114,4 +118,7 @@ class FakeMultiStoreTransactionNative extends TransactionNativeBase {
       idbLog('abort not supported in fake multistore transaction');
     }
   }
+
+  @override
+  Iterable<String> get objectStoreNames => database.objectStoreNames;
 }

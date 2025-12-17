@@ -9,11 +9,6 @@ void main() {
   var sembast1Factory = databaseFactoryMemoryFs;
   var idb1Factory = IdbFactorySembast(sembast1Factory);
   var sembast2Factory = DatabaseFactoryJdb(JdbFactoryIdb(idb1Factory));
-  /*
-  var idb1Factory = JdbI;
-  var sembast1Factory = IdbFactorySembast(idb1Factory);
-  var idb2Factory = idbFactoryMemory;
-  */
   var testContext = idb.SembastTestContext(
     sembastDatabaseFactory: sembast2Factory,
   );

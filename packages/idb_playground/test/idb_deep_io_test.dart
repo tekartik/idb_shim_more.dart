@@ -1,5 +1,9 @@
+@TestOn('vm')
+library;
+
 import 'package:idb_shim/idb_client_sembast.dart';
 import 'package:idb_test/idb_test_common.dart' as idb;
+import 'package:idb_test/idb_test_common.dart';
 import 'package:idb_test/test_runner.dart';
 import 'package:path/path.dart';
 import 'package:sembast/sembast_io.dart';

@@ -2,15 +2,12 @@ import 'dart:async';
 // ignore: deprecated_member_use
 
 import 'package:idb_shim/idb_client_native_html.dart';
-// ignore: implementation_imports
-import 'package:sembast_web/src/jdb_factory_idb.dart';
-// ignore: implementation_imports
-import 'package:sembast_web/src/jdb_import.dart';
-// ignore: implementation_imports
-import 'package:sembast_web/src/web_defs.dart';
+import 'package:idb_shim/idb_jdb.dart';
 // ignore: implementation_imports
 import 'package:sembast_web/src/web_interop.dart'
     show addNotificationRevision, notificationRevisionStream;
+// ignore: implementation_imports
+import 'package:idb_shim/src/jdb/web_defs.dart' show NotificationRevision;
 
 /// The native jdb factory
 var jdbFactoryIdbNative = JdbFactoryWeb();

@@ -2,13 +2,12 @@
 library;
 
 import 'package:idb_shim/idb_client_sembast.dart';
+import 'package:idb_shim/idb_jdb.dart';
 import 'package:idb_test/idb_test_common.dart' as idb;
 import 'package:idb_test/idb_test_common.dart';
 import 'package:idb_test/test_runner.dart';
 import 'package:path/path.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:sembast_test/jdb_test_common.dart';
-import 'package:sembast_test/sembast_jdb.dart';
 
 String get testOutTopPath => join('.dart_tool', 'idb_shim', 'test');
 

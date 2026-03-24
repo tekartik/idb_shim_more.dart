@@ -29,8 +29,10 @@ void schemaSdbTest(SdbTestContext ctx) {
       var schoolDb = SchoolDb();
       var db = await factory.openDatabase(
         dbName,
-        version: 1,
-        schema: schoolDb.schoolDbSchema,
+        options: SdbOpenDatabaseOptions(
+          version: 1,
+          schema: schoolDb.schoolDbSchema,
+        ),
       );
       await db.inStoresTransaction(
         [schoolDb.schoolStore, schoolDb.studentStore],
@@ -70,8 +72,10 @@ void schemaSdbTest(SdbTestContext ctx) {
       await factory.deleteDatabase(dbName);
       var db = await factory.openDatabase(
         dbName,
-        version: 1,
-        schema: SdbDatabaseSchema(stores: [testStore.schema()]),
+        options: SdbOpenDatabaseOptions(
+          version: 1,
+          schema: SdbDatabaseSchema(stores: [testStore.schema()]),
+        ),
       );
       expect(
         await db.readSchemaDef(),
@@ -86,22 +90,26 @@ void schemaSdbTest(SdbTestContext ctx) {
       await expectLater(() async {
         await factory.openDatabase(
           dbName,
-          version: 1,
-          schema: SdbDatabaseSchema(
-            stores: [
-              testStore.schema(indexes: [testSchemaIndex1]),
-            ],
+          options: SdbOpenDatabaseOptions(
+            version: 1,
+            schema: SdbDatabaseSchema(
+              stores: [
+                testStore.schema(indexes: [testSchemaIndex1]),
+              ],
+            ),
           ),
         );
       }, throwsA(isA<StateError>()));
 
       db = await factory.openDatabase(
         dbName,
-        version: 2,
-        schema: SdbDatabaseSchema(
-          stores: [
-            testStore.schema(indexes: [testSchemaIndex1]),
-          ],
+        options: SdbOpenDatabaseOptions(
+          version: 2,
+          schema: SdbDatabaseSchema(
+            stores: [
+              testStore.schema(indexes: [testSchemaIndex1]),
+            ],
+          ),
         ),
       );
       expect((await db.readSchemaDef()).toDebugMap(), {
@@ -117,10 +125,12 @@ void schemaSdbTest(SdbTestContext ctx) {
       await expectLater(() async {
         await factory.openDatabase(
           dbName,
-          schema: SdbDatabaseSchema(
-            stores: [
-              testStore.schema(indexes: [testSchemaIndex1bis]),
-            ],
+          options: SdbOpenDatabaseOptions(
+            schema: SdbDatabaseSchema(
+              stores: [
+                testStore.schema(indexes: [testSchemaIndex1bis]),
+              ],
+            ),
           ),
         );
       }, throwsA(isA<StateError>()));

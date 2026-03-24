@@ -19,6 +19,9 @@ class SchoolDb {
   );
 
   Future<SdbDatabase> open(SdbFactory factory, String dbName) async {
-    return factory.openDatabase(dbName, version: 1, schema: schoolDbSchema);
+    return factory.openDatabase(
+      dbName,
+      options: SdbOpenDatabaseOptions(version: 1, schema: schoolDbSchema),
+    );
   }
 }

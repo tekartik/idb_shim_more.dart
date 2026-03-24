@@ -24,8 +24,10 @@ void schemaSdbTest(SdbTestContext ctx) {
       var schoolDb = SchoolDb();
       var db = await factory.openDatabase(
         dbName,
-        version: 1,
-        schema: schoolDb.schoolDbSchema,
+        options: SdbOpenDatabaseOptions(
+          version: 1,
+          schema: schoolDb.schoolDbSchema,
+        ),
       );
       await db.inStoresTransaction(
         [schoolDb.schoolStore, schoolDb.studentStore],

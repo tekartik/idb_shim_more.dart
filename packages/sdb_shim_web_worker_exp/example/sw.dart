@@ -18,11 +18,13 @@ var _database = () async {
   // equivalent to: factory = idbFactoryFromIndexedDB(scope.indexedDB);
   return factory.openDatabase(
     'sdb_shim_web_worker_exp_db',
-    version: 1,
-    onVersionChange: (SdbVersionChangeEvent e) {
-      var db = e.db;
-      db.createStore(_store);
-    },
+    options: SdbOpenDatabaseOptions(
+      version: 1,
+      onVersionChange: (SdbVersionChangeEvent e) {
+        var db = e.db;
+        db.createStore(_store);
+      },
+    ),
   );
 }();
 void _handleMessageEvent(web.Event event) async {

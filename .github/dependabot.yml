@@ -6,10 +6,6 @@ enable-beta-ecosystems: true
 
 updates:
   - package-ecosystem: "pub"
-    directory: "."
-    schedule:
-      interval: "monthly"
-  - package-ecosystem: "pub"
     directory: "packages/idb_playground"
     schedule:
       interval: "monthly"

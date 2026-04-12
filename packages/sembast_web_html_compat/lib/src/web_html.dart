@@ -1,7 +1,7 @@
 import 'dart:async';
 // ignore: deprecated_member_use
 
-import 'package:idb_shim/idb_client_native_html.dart';
+import 'package:idb_shim/idb_client_native_interop.dart';
 import 'package:idb_shim/idb_jdb.dart';
 // ignore: implementation_imports
 import 'package:sembast_web/src/web_interop.dart'

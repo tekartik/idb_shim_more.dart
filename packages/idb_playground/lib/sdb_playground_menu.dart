@@ -157,7 +157,7 @@ void sdbPlaygroundMenu(SdbFactory sdbFactory, {String? path}) {
       var count = int.tryParse(await prompt('How many notes?')) ?? 0;
       await notesDb.generateNotes(count);
     });
-  }, solo: true);
+  });
   menu('open', () async {
     item('open downgrade', () async {
       var name = fixDbName('open_downgrade.db');

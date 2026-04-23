@@ -27,14 +27,9 @@ void stressMenu(SdbFactory factory, String dbName) {
 
   // Solo?
   var count = 10;
-  test(
-    'create and list $count',
-    () async {
-      await sdbCreateNAndList(factory, dbName, count: count);
-    },
-    solo: true,
-    timeout: Timeout(Duration(minutes: count > 500 ? 5 : 1)),
-  );
+  test('create and list $count', () async {
+    await sdbCreateNAndList(factory, dbName, count: count);
+  }, timeout: Timeout(Duration(minutes: count > 500 ? 5 : 1)));
 }
 
 Future<void> main() async {

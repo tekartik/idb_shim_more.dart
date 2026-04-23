@@ -1,9 +1,19 @@
-import 'package:idb_shim/idb.dart';
+import 'package:idb_shim/idb_sdb.dart';
 import 'package:idb_shim/utils/idb_cursor_utils.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_app_dev_menu/dev_menu.dart';
+import 'package:tekartik_idb_playground/sdb_playground_menu.dart';
+
+void main(List<String> args) {
+  mainMenu(args, () {
+    idbPlaygroundMenu(idbFactoryMemory, path: join('.local', 'playground'));
+  });
+}
 
 void idbPlaygroundMenu(IdbFactory idbFactory, {String? path}) {
+  menu('sdb', () {
+    sdbPlaygroundMenu(sdbFactoryFromIdb(idbFactory));
+  });
   String fixDbName(String name) {
     if (path != null) {
       return join(path, name);
@@ -63,8 +73,11 @@ void idbPlaygroundMenu(IdbFactory idbFactory, {String? path}) {
       }
     }
 
-    await dumpRows();
-    db.close();
+    try {
+      await dumpRows();
+    } finally {
+      db.close();
+    }
     write('open version 1');
     try {
       db = await idbFactory.openOnDowngradeDelete(

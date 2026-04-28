@@ -10,6 +10,8 @@ import 'package:idb_shim_html_compat/src/native/native_index.dart';
 import 'package:idb_shim_html_compat/src/native/native_interop.dart';
 import 'package:idb_shim_html_compat/src/native/native_key_range.dart';
 
+import 'indexed_db.dart';
+
 class ObjectStoreNative extends ObjectStore {
   idb.ObjectStore idbObjectStore;
 
@@ -208,4 +210,12 @@ class ObjectStoreNative extends ObjectStore {
 
   @override
   List<String> get indexNames => idbObjectStore.indexNames!;
+
+  @override
+  Future<Object?> getKey(Object key) {
+    return catchAsyncNativeError(() {
+      var request = idbObjectStore.getKey(key);
+      return request.future;
+    });
+  }
 }

@@ -62,6 +62,7 @@ void schemaSdbTest(SdbTestContext ctx) {
               .findRecords(txn);
           expect(students.length, 2);
           for (var student in students) {
+            // ignore: avoid_print
             print('Student: $student');
           }
         },

@@ -39,6 +39,7 @@ void schemaSdbTest(SdbTestContext ctx) {
               .record(schoolKey)
               .put(txn, schoolRecord);
           var schools = await schoolDb.scvSchoolStore.findRecords(txn);
+          // ignore: avoid_print
           print('Schools: $schools');
           expect(schools.first.ref.key, 'school1');
           var studentRecord1 = DbStudentRecord()
@@ -61,6 +62,7 @@ void schemaSdbTest(SdbTestContext ctx) {
               .findRecords(txn);
           expect(students.length, 2);
           for (var student in students) {
+            // ignore: avoid_print
             print('Student: $student');
           }
         },

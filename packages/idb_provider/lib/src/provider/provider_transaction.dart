@@ -220,6 +220,7 @@ class ProviderStoreTransactionBase<K, V> extends ProviderTransaction
     } catch (e) {
       // typically db might have been closed so add some debug information
       if (provider.isClosed) {
+        // ignore: avoid_print
         print('database has been closed');
       }
       rethrow;

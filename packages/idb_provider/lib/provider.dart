@@ -79,7 +79,9 @@ abstract class Provider {
       _readyCompleter = null;
     } else {
       if (_ready != null) {
-        throw 'ready should not have been called before setting the db';
+        throw StateError(
+          'ready should not have been called before setting the db',
+        );
       } else {
         _readyCompleter = Completer.sync();
         _db = db;
@@ -103,7 +105,9 @@ abstract class Provider {
       _readyCompleter = null;
     } else {
       if (_ready != null) {
-        throw 'ready should not have been called before setting the db';
+        throw StateError(
+          'ready should not have been called before setting the db',
+        );
       } else {
         _readyCompleter = Completer.sync();
         _setDatabase(db);
@@ -232,8 +236,11 @@ abstract class Provider {
               });
         },
         (e, StackTrace st) {
+          // ignore: avoid_print
           print('open failed');
+          // ignore: avoid_print
           print(e);
+          // ignore: avoid_print
           print(st);
           _readyCompleter!.completeError(e, st);
         },

@@ -124,10 +124,10 @@ void sdbPlaygroundMenu(SdbFactory sdbFactory, {String? path}) {
       await dbClose();
     });
     item('db info', () async {
-      print('db: $db');
-      print('factory: ${db.factory}');
-      print('name: ${db.name}');
-      print('version: ${db.version}');
+      writeln('db: $db');
+      writeln('factory: ${db.factory}');
+      writeln('name: ${db.name}');
+      writeln('version: ${db.version}');
     });
     item('reopen', () async {
       await dbClose();

@@ -10,6 +10,7 @@ import 'package:idb_shim_html_compat/src/native/native_error.dart';
 import 'package:idb_shim_html_compat/src/native/native_object_store.dart';
 import 'package:idb_shim_html_compat/src/native/native_transaction.dart';
 
+/// VersionChangeEventNative representation.
 class VersionChangeEventNative extends IdbVersionChangeEventBase {
   final IdbFactory factory;
   idb.VersionChangeEvent idbVersionChangeEvent;
@@ -47,6 +48,7 @@ class VersionChangeEventNative extends IdbVersionChangeEventBase {
   }
 }
 
+/// DatabaseNative representation.
 class DatabaseNative extends IdbDatabaseBase {
   idb.Database? idbDatabase;
 
@@ -86,6 +88,7 @@ class DatabaseNative extends IdbDatabaseBase {
           storeNameOrStoreNames,
           mode,
         );
+
         return TransactionNative(this, idbTransaction);
       })!;
     } catch (e) {
@@ -118,6 +121,7 @@ class DatabaseNative extends IdbDatabaseBase {
                   ),
                   mode,
                 );
+
                 return TransactionNative(this, idbTransaction);
               })!;
             } catch (_) {}

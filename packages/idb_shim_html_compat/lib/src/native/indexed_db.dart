@@ -28,12 +28,14 @@ extension IDBRequestExt on idb.Request {
   /// On success and error helper.
   void handleOnSuccessAndError(Completer<Object?> completer) {
     handleOnSuccess(completer);
+
     handleOnError(completer);
   }
 
   /// Future result
   Future<Object?> get future {
     var completer = Completer<Object?>.sync();
+
     handleOnSuccessAndError(completer);
     return completer.future;
   }

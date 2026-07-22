@@ -10,10 +10,12 @@ import 'package:idb_shim_html_compat/src/native/native_database.dart';
 import 'package:idb_shim_html_compat/src/native/native_error.dart';
 import 'package:idb_shim_html_compat/src/native/native_object_store.dart';
 
+/// TransactionNativeBase representation.
 abstract class TransactionNativeBase extends IdbTransactionBase {
   TransactionNativeBase(super.database);
 }
 
+/// TransactionNative representation.
 class TransactionNative extends TransactionNativeBase {
   idb.Transaction idbTransaction;
 
@@ -37,6 +39,7 @@ class TransactionNative extends TransactionNativeBase {
   ObjectStore objectStore(String name) {
     return catchNativeError(() {
       final idbObjectStore = idbTransaction.objectStore(name);
+
       return ObjectStoreNative(idbObjectStore);
     })!;
   }
@@ -70,6 +73,7 @@ class TransactionNative extends TransactionNativeBase {
 //
 // Safari fake multistore transaction
 // create the transaction when objectStore is called
+/// FakeMultiStoreTransactionNative representation.
 class FakeMultiStoreTransactionNative extends TransactionNativeBase {
   //List<_NativeTransaction> transactions = [];
   // We sequencialize the transactions

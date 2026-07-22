@@ -12,6 +12,7 @@ import 'package:idb_shim_html_compat/src/native/native_key_range.dart';
 
 import 'indexed_db.dart';
 
+/// ObjectStoreNative representation.
 class ObjectStoreNative extends ObjectStore {
   idb.ObjectStore idbObjectStore;
 

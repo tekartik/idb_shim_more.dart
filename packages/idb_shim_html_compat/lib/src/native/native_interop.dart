@@ -8,11 +8,9 @@ import 'dart:indexed_db' as idb;
 import 'package:idb_shim/src/utils/core_imports.dart';
 import 'package:js/js.dart';
 
-///
 /// Helper for iterating over cursors in a request.
 ///
 /// Copied from dart sdk
-///
 Stream<idb.Cursor> cursorStreamFromResult(
   idb.Request request,
   bool? autoAdvance,
@@ -39,9 +37,7 @@ Stream<idb.Cursor> cursorStreamFromResult(
   return controller.stream;
 }
 
-///
 /// Creates a stream of cursors over the records in this object store.
-///
 Stream<idb.Cursor> storeOpenKeyCursor(
   idb.ObjectStore objectStore, {
   dynamic key,
@@ -65,6 +61,7 @@ Stream<idb.Cursor> storeOpenKeyCursor(
   } else {
     request = objectStore.openKeyCursor(keyOrRange, direction);
   }
+
   return cursorStreamFromResult(request, autoAdvance);
 }
 
@@ -86,9 +83,7 @@ Future<Object?> _completeRequest(idb.Request request) {
 Future<List<Object>> _completeObjectListRequest(idb.Request request) =>
     _completeRequest(request).then((value) => (value as List).cast<Object>());
 
-///
 /// [query] is a native query
-///
 Future<List<Object>> storeGetAll(
   idb.ObjectStore objectStore, [
   dynamic query,
@@ -107,9 +102,7 @@ Future<List<Object>> storeGetAll(
   }
 }
 
-///
 /// [query] is a native query
-///
 Future<List<Object>> storeGetAllKeys(
   idb.ObjectStore objectStore, [
   dynamic query,
@@ -128,9 +121,7 @@ Future<List<Object>> storeGetAllKeys(
   }
 }
 
-///
 /// [query] is a native query
-///
 Future<List<Object>> indexGetAll(
   idb.Index index, [
   dynamic query,
@@ -149,9 +140,7 @@ Future<List<Object>> indexGetAll(
   }
 }
 
-///
 /// [query] is a native query
-///
 Future<List<Object>> indexGetAllKeys(
   idb.Index index, [
   dynamic query,

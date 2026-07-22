@@ -85,6 +85,7 @@ class _NativeCursorWithValue extends CursorWithValue {
   }
 }
 
+/// CursorWithValueControllerNative representation.
 class CursorWithValueControllerNative {
   late StreamController<CursorWithValue> _ctlr;
 
@@ -116,6 +117,7 @@ class CursorWithValueControllerNative {
   Stream<CursorWithValue> get stream => _ctlr.stream;
 }
 
+/// CursorControllerNative representation.
 class CursorControllerNative {
   // Sync must be true
   late StreamController<Cursor> _ctlr;

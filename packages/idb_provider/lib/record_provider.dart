@@ -290,10 +290,8 @@ class DbRecordProviderWriteTransaction<T extends DbRecordBase, K>
   }
 }
 
-///
 /// A record provider is a provider of a given object type
 /// in one store
-///
 abstract class DbRecordBaseProvider<T extends DbRecordBase, K> {
   late Provider provider;
 
@@ -524,9 +522,7 @@ abstract class DbSyncedRecordProvider<T extends DbSyncedRecordBase, K>
     return txn.clearRecords();
   }
 
-  ///
   /// TODO: Put won't change data (which one) if local version has changed
-  ///
   Future<T> put(T record, {bool? syncing}) async {
     var txn = storeTransaction(true);
 
@@ -541,12 +537,10 @@ abstract class DbSyncedRecordProvider<T extends DbSyncedRecordBase, K>
     return record;
   }
 
-  ///
   /// during sync, update the sync version
   /// if the local version has changed since, keep the dirty flag
   /// other data is not touched
   /// the dirty flag is only cleared if the local version has not changed
-  ///
   Future updateSyncInfo(T record, String syncId, String syncVersion) async {
     var txn = storeTransaction(true);
     var existingRecord = await txnGet(txn, record.id as K);

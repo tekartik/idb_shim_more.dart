@@ -62,6 +62,7 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
   }) {
     FutureOr? onUpdateNeededFutureOr;
     Object? onUpdateNeededException;
+
     void openOnUpgradeNeeded(idb.VersionChangeEvent e) {
       final event = VersionChangeEventNative(this, e);
 
@@ -75,6 +76,7 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
     void openOnBlocked(html.Event e) {
       if (onBlocked != null) {
         Event event = EventNative(e);
+
         onBlocked(event);
       } else {
         idbLog('blocked opening $dbName v $version');

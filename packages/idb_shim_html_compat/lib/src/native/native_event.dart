@@ -4,6 +4,7 @@ import 'dart:html' as html;
 
 import 'package:idb_shim/idb.dart';
 
+/// EventNative representation.
 class EventNative extends Event {
   final html.Event _htmlEvent;
 

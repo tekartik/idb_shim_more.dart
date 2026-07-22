@@ -9,6 +9,7 @@ import 'package:idb_shim_html_compat/src/native/native_error.dart';
 import 'package:idb_shim_html_compat/src/native/native_interop.dart';
 import 'package:idb_shim_html_compat/src/native/native_key_range.dart';
 
+/// IndexNative representation.
 class IndexNative extends Index {
   idb.Index idbIndex;
 
@@ -31,6 +32,7 @@ class IndexNative extends Index {
   @override
   Future<int> count([keyOrRange]) {
     Future<int> countFuture;
+
     return catchAsyncNativeError(() {
       if (keyOrRange == null) {
         countFuture = idbIndex.count();

@@ -96,7 +96,7 @@ Future<List<Object>> storeGetAll(
     } else {
       request = objectStore.getAll(query);
     }
-    return _completeObjectListRequest(request);
+    return await _completeObjectListRequest(request);
   } catch (e, stacktrace) {
     return Future.error(e, stacktrace);
   }
@@ -115,7 +115,7 @@ Future<List<Object>> storeGetAllKeys(
     } else {
       request = objectStore.getAllKeys(query);
     }
-    return _completeObjectListRequest(request);
+    return await _completeObjectListRequest(request);
   } catch (e, stacktrace) {
     return Future.error(e, stacktrace);
   }
@@ -134,7 +134,7 @@ Future<List<Object>> indexGetAll(
     } else {
       request = index.getAll(query);
     }
-    return _completeObjectListRequest(request);
+    return await _completeObjectListRequest(request);
   } catch (e, stacktrace) {
     return Future.error(e, stacktrace);
   }
@@ -153,7 +153,7 @@ Future<List<Object>> indexGetAllKeys(
     } else {
       request = index.getAllKeys(query);
     }
-    return _completeObjectListRequest(request);
+    return await _completeObjectListRequest(request);
   } catch (e, stacktrace) {
     return Future.error(e, stacktrace);
   }

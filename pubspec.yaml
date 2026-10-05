@@ -7,5 +7,6 @@ workspace:
   - packages/idb_provider
   - packages/idb_shim_html_compat
   - packages/idb_shim_web_worker_exp
+  - packages/sdb_sembast
   - packages/sdb_shim_web_worker_exp
   - packages/sembast_web_html_compat

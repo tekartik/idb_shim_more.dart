@@ -22,6 +22,10 @@ updates:
     schedule:
       interval: "monthly"
   - package-ecosystem: "pub"
+    directory: "packages/sdb_sembast"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "pub"
     directory: "packages/sdb_shim_web_worker_exp"
     schedule:
       interval: "monthly"

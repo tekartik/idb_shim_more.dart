@@ -3,13 +3,16 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:idb_shim/idb.dart'
+    show DatabaseException, DatabaseReadOnlyError;
 import 'package:sembast/sembast.dart' as sembast;
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_import.dart';
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_sembast_meta.dart';
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_sembast_transaction.dart';
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_sembast_transaction_index.dart';
 
-/// Skip [offset] items then keep [limit] items, when positive.
+/// Skip [offset] items then keep [limit] items. A null or negative offset or
+/// limit is ignored, a limit of 0 keeps nothing (like idb).
 Iterable<T> sdbSembastOffsetLimit<T>(
   Iterable<T> iterable, {
   int? offset,
@@ -18,10 +21,21 @@ Iterable<T> sdbSembastOffsetLimit<T>(
   if (offset != null && offset > 0) {
     iterable = iterable.skip(offset);
   }
-  if (limit != null && limit > 0) {
+  if (limit != null && limit >= 0) {
     iterable = iterable.take(limit);
   }
   return iterable;
+}
+
+/// The number of items [sdbSembastOffsetLimit] keeps out of [count].
+int sdbSembastOffsetLimitCount(int count, {int? offset, int? limit}) {
+  if (offset != null && offset > 0) {
+    count = max(0, count - offset);
+  }
+  if (limit != null && limit >= 0) {
+    count = min(count, limit);
+  }
+  return count;
 }
 
 int? _positiveOrNull(int? value) => (value != null && value > 0) ? value : null;
@@ -75,7 +89,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
 
   void _checkWrite() {
     if (transaction.mode != SdbTransactionMode.readWrite) {
-      throw StateError('Read only transaction on store ${store.name}');
+      throw DatabaseReadOnlyError();
     }
   }
 
@@ -148,6 +162,9 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
   Future<List<SdbRawRecordSembast<K>>> _findRaw(
     SdbFindOptions<K> options,
   ) async {
+    if (options.limit == 0) {
+      return [];
+    }
     var filter = options.filter;
     if (filter == null) {
       return (await sembastStore.find(
@@ -196,7 +213,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
         );
         if (otherIndexKey != null &&
             compareKeys(otherIndexKey, indexKey) == 0) {
-          throw StateError(
+          throw DatabaseException(
             'Unique index ${index.name} of store ${store.name}: '
             'key $indexKey already used by record ${record.key}',
           );
@@ -258,6 +275,14 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
     var meta = this.meta;
     var keyPath = meta?.keyPath;
     if (keyPath == null) {
+      // A String key is generated, an int key only for an auto increment
+      // store.
+      if (K != String && !autoIncrement) {
+        throw DatabaseException(
+          'Store ${store.name} has no key path and no auto increment, '
+          'a key is required',
+        );
+      }
       var encoded = _codec.encode(value);
       // Checked and converted before generating the key: a failed add must
       // not consume it.
@@ -285,9 +310,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
     var key = value.getKeyValue(idbKeyPath);
     if (key == null) {
       if (!meta!.autoIncrement) {
-        throw ArgumentError.value(
-          value,
-          'value',
+        throw DatabaseException(
           'Missing key at $keyPath in store ${store.name}',
         );
       }
@@ -307,7 +330,9 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
       return key;
     }
     if (await sembastStore.record(key as K).exists(sembastClient)) {
-      throw StateError('Record $key already exists in store ${store.name}');
+      throw DatabaseException(
+        'Record $key already exists in store ${store.name}',
+      );
     }
     await _write(key, value, _codec.encode(value));
     return key;
@@ -328,9 +353,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
       }
       key = value.getKeyValue(sdbKeyPathToIdbKeyPath(keyPath)) as K?;
       if (key == null) {
-        throw ArgumentError.value(
-          value,
-          'value',
+        throw DatabaseException(
           'Missing key at $keyPath in store ${store.name}',
         );
       }
@@ -349,8 +372,56 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
     transaction.noteWriteToStore(store.name);
   }
 
-  /// Cursor row update, raw like idb.
+  /// Raw cursor row update ([SdbCursorRowImpl.onUpdate], used by the
+  /// migration `updateRaw`), like idb: not encoded, not notified.
   Future<void> updateImpl(K key, Object data) => putRawImpl(key, data);
+
+  /// Cursor row update of a value ([SdbCursorRowImpl.onUpdateValue], used by
+  /// `row.update`): encoded, unique checked and notified like a put.
+  Future<void> updateValueImpl(K key, Object value) => putImpl(key, value as V);
+
+  /// Walks [records] like an idb cursor, for the store and index iterate:
+  /// [newRow] builds the handler row of a record from its update callbacks
+  /// (raw and value, both at its [primaryKey]), [handler] returns false to
+  /// stop. Like an idb cursor, the transaction waits for the row updates the
+  /// handler did not await.
+  Future<void> iterateRecords<T, R>(
+    Iterable<T> records, {
+    required K Function(T record) primaryKey,
+    required R Function(
+      T record,
+      Future<void> Function(Object data) onUpdate,
+      Future<void> Function(Object value) onUpdateValue,
+    )
+    newRow,
+    required FutureOr<bool> Function(R row) handler,
+  }) async {
+    var pendingUpdates = <Future<void>>[];
+    Future<void> Function(Object) tracked(
+      Future<void> Function(Object) update,
+    ) => (data) {
+      var future = update(data);
+      pendingUpdates.add(future);
+      return future;
+    };
+    try {
+      for (var record in records) {
+        var key = primaryKey(record);
+        var row = newRow(
+          record,
+          tracked((data) => updateImpl(key, data)),
+          tracked((value) => updateValueImpl(key, value)),
+        );
+        var result = handler(row);
+        var doContinue = result is Future<bool> ? await result : result;
+        if (!doContinue) {
+          return;
+        }
+      }
+    } finally {
+      await Future.wait(pendingUpdates);
+    }
+  }
 
   @override
   Future<void> deleteImpl(K key) async {
@@ -386,38 +457,25 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
   Future<void> iterateImpl({
     required SdbFindOptions<K> options,
     required SdbCursorRowHandler<K, V> handler,
-  }) async {
-    var records = await _findRaw(options);
-    // Like an idb cursor, the transaction waits for the row updates the
-    // handler did not await.
-    var pendingUpdates = <Future<void>>[];
-    try {
-      for (var record in records) {
-        var key = record.key;
-        var row = SdbCursorRowImpl<K, V>.paged(
-          key: key,
-          rawValue: record.rawValue,
-          onUpdate: (data) {
-            var future = updateImpl(key, data);
-            pendingUpdates.add(future);
-            return future;
-          },
-        );
-        var result = handler(row);
-        var doContinue = result is Future<bool> ? await result : result;
-        if (!doContinue) {
-          return;
-        }
-      }
-    } finally {
-      await Future.wait(pendingUpdates);
-    }
-  }
+  }) async => iterateRecords<SdbRawRecordSembast<K>, SdbCursorRow<K, V>>(
+    await _findRaw(options),
+    primaryKey: (record) => record.key,
+    newRow: (record, onUpdate, onUpdateValue) => SdbCursorRowImpl<K, V>.paged(
+      key: record.key,
+      rawValue: record.rawValue,
+      onUpdate: onUpdate,
+      onUpdateValue: onUpdateValue,
+    ),
+    handler: handler,
+  );
 
   @override
   Future<List<SdbRecordKey<K, V>>> findRecordKeysImpl({
     required SdbFindOptions<K> options,
   }) async {
+    if (options.limit == 0) {
+      return [];
+    }
     if (options.filter != null) {
       // Filtered in dart on the values, a snapshot is a record key.
       return findRecordsImpl(options: options);
@@ -431,6 +489,9 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
 
   @override
   Future<int> countImpl({required SdbFindOptions<K> options}) async {
+    if (options.limit == 0) {
+      return 0;
+    }
     if (options.filter != null) {
       return (await _findRaw(options)).length;
     }
@@ -438,19 +499,18 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
       sembastClient,
       filter: _boundariesFilter(options.boundaries),
     );
-    var offset = _positiveOrNull(options.offset);
-    var limit = _positiveOrNull(options.limit);
-    if (offset != null) {
-      count = max(0, count - offset);
-    }
-    if (limit != null) {
-      count = min(count, limit);
-    }
-    return count;
+    return sdbSembastOffsetLimitCount(
+      count,
+      offset: options.offset,
+      limit: options.limit,
+    );
   }
 
   @override
   Future<void> deleteRecordsImpl({required SdbFindOptions<K> options}) async {
+    if (options.limit == 0) {
+      return;
+    }
     _checkWrite();
     List<K> keys;
     if (options.filter != null) {

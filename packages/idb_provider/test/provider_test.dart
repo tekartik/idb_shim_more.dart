@@ -43,12 +43,13 @@ void testMain(TestContext context) {
               );
 
               // Cursor
-              txn.openCursor().listen((cwv) {
-                final cursorRow = intMapProviderRawFactory.cursorWithValueRow(
-                  cwv,
-                );
-                expect(cursorRow, row);
-              });
+              return txn
+                  .openCursor()
+                  .map(intMapProviderRawFactory.cursorWithValueRow)
+                  .toList()
+                  .then((cursorRows) {
+                    expect(cursorRows, [row]);
+                  });
             });
           });
         });
@@ -150,6 +151,7 @@ void testMain(TestContext context) {
           )
           .listen((CursorWithValue cwv) {
             count++;
+            cwv.next();
           })
           .asFuture<void>()
           .then((_) {
@@ -157,10 +159,11 @@ void testMain(TestContext context) {
           });
     }
 
-    test('cursor count', () {
-      slowCount().then((int count) {
-        expect(count, 0);
-      });
+    test('cursor count', () async {
+      expect(await slowCount(), 0);
+      await provider.putName('test');
+      await provider.putName('test2');
+      expect(await slowCount(), 2);
     });
     test('getNames', () {
       final c1 = 'C1';

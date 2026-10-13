@@ -56,6 +56,52 @@ void testMain(TestContext context) {
         );
       });
 
+      test('composite index', () {
+        final indexMeta = ProviderIndexMeta('idx', ['a', 'b']);
+        expect(indexMeta, ProviderIndexMeta('idx', ['a', 'b']));
+        expect(indexMeta, isNot(ProviderIndexMeta('idx', ['a', 'c'])));
+        expect(indexMeta, isNot(ProviderIndexMeta('idx', 'a')));
+      });
+
+      test('composite key paths read back', () async {
+        var dbName = 'provider_meta_composite.db';
+        await idbFactory.deleteDatabase(dbName);
+        var db = await idbFactory.open(
+          dbName,
+          version: 1,
+          onUpgradeNeeded: (event) {
+            var store = event.database.createObjectStore(
+              'store',
+              keyPath: ['a', 'b'],
+            );
+            store.createIndex('idx', ['c', 'd']);
+          },
+        );
+        try {
+          ProviderStoreMeta read() => ProviderStore(
+            db.transaction('store', idbModeReadOnly).objectStore('store'),
+          ).meta!;
+          var storeMeta = read();
+          expect(storeMeta, read());
+          expect(storeMeta.indecies, [
+            ProviderIndexMeta('idx', ['c', 'd']),
+          ]);
+          expect(
+            storeMeta,
+            isNot(
+              ProviderStoreMeta(
+                'store',
+                indecies: [
+                  ProviderIndexMeta('idx', ['c', 'd']),
+                ],
+              ),
+            ),
+          );
+        } finally {
+          db.close();
+        }
+      });
+
       test('store', () {
         var storeMeta = ProviderStoreMeta('str');
         expect(storeMeta, ProviderStoreMeta('str'));
@@ -197,6 +243,18 @@ void testMain(TestContext context) {
               [
                 ProviderIndexMeta('idx', 'my_key'),
               ], //
+            ),
+          ]);
+          return roundCircle(meta);
+        });
+
+        test('composite_index', () {
+          final meta = ProviderStoresMeta([
+            ProviderStoreMeta(
+              'store',
+              indecies: [
+                ProviderIndexMeta('idx', ['a', 'b']),
+              ],
             ),
           ]);
           return roundCircle(meta);

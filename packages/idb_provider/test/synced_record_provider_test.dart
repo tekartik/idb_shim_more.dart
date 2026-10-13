@@ -281,13 +281,15 @@ void testMain(TestContext context) {
 
         txn = appProvider.basic.storeReadTransaction;
         var stream = txn.openCursor(limit: 1);
-        await stream.listen((CursorWithValue cwv) {
-          final record = DbBasicRecord.fromDbEntry(
-            cwv.value as Map,
-            cwv.primaryKey as String,
-          )!;
-          expect(record.id, '_1');
-        }).asFuture<void>();
+        var ids = await stream
+            .map(
+              (CursorWithValue cwv) => DbBasicRecord.fromDbEntry(
+                cwv.value as Map,
+                cwv.primaryKey as String,
+              )!.id,
+            )
+            .toList();
+        expect(ids, ['_1']);
 
         await txn.completed;
 
@@ -339,13 +341,15 @@ void testMain(TestContext context) {
 
         txn = appProvider.basic.storeReadTransaction;
         var stream = txn.openCursor(limit: 1);
-        await stream.listen((CursorWithValue cwv) {
-          final record = DbBasicRecord.fromDbEntry(
-            cwv.value as Map,
-            cwv.primaryKey as String,
-          )!;
-          expect(record.id, '_1');
-        }).asFuture<void>();
+        var ids = await stream
+            .map(
+              (CursorWithValue cwv) => DbBasicRecord.fromDbEntry(
+                cwv.value as Map,
+                cwv.primaryKey as String,
+              )!.id,
+            )
+            .toList();
+        expect(ids, ['_1']);
 
         await txn.completed;
 

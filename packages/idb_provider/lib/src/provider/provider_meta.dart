@@ -2,6 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:idb_shim/idb.dart';
 import 'package:tekartik_common_utils/hash_code_utils.dart';
 
+/// Key paths are equal: same String or same list of String (composite).
+bool _keyPathEquals(Object? keyPath1, Object? keyPath2) =>
+    const DeepCollectionEquality().equals(keyPath1, keyPath2);
+
 class ProviderDbMeta {
   final String name;
   final int version;
@@ -46,7 +50,7 @@ class ProviderDb {
   ProviderStore createStore(ProviderStoreMeta meta) {
     final objectStore = database!.createObjectStore(
       meta.name,
-      keyPath: meta.keyPath,
+      keyPath: meta._keyPath,
       autoIncrement: meta.autoIncrement,
     );
     return ProviderStore(objectStore);
@@ -117,28 +121,34 @@ class ProviderStoresMeta {
 
 class ProviderStoreMeta {
   final String name;
-  final String? keyPath;
+
+  /// The key path, a String or, read from an existing store, a list of String
+  /// (composite key path).
+  final Object? _keyPath;
   final bool autoIncrement;
 
   ProviderStoreMeta(
-    this.name, {
-    this.keyPath,
+    String name, {
+    String? keyPath,
     bool? autoIncrement,
     List<ProviderIndexMeta?>? indecies,
-  })
-    //
-    : autoIncrement = (autoIncrement == true),
-       //
-       indecies = (indecies == null) ? [] : indecies;
+  }) : this._(name, keyPath, autoIncrement, indecies);
+
+  ProviderStoreMeta._(
+    this.name,
+    this._keyPath,
+    bool? autoIncrement,
+    List<ProviderIndexMeta?>? indecies,
+  ) : autoIncrement = (autoIncrement == true),
+      indecies = (indecies == null) ? [] : indecies;
   final List<ProviderIndexMeta?> indecies;
 
+  /// The key path, throws for a composite key path (a list of String) read
+  /// from an existing store.
+  String? get keyPath => _keyPath as String?;
+
   ProviderStoreMeta overrideIndecies(List<ProviderIndexMeta> indecies) {
-    return ProviderStoreMeta(
-      name,
-      keyPath: keyPath,
-      autoIncrement: autoIncrement,
-      indecies: indecies,
-    );
+    return ProviderStoreMeta._(name, _keyPath, autoIncrement, indecies);
   }
 
   @override
@@ -152,7 +162,7 @@ class ProviderStoreMeta {
       if (other.name != name) {
         return false;
       }
-      if (other.keyPath != keyPath) {
+      if (!_keyPathEquals(other._keyPath, _keyPath)) {
         return false;
       }
       if (other.autoIncrement != autoIncrement) {
@@ -172,7 +182,7 @@ class ProviderStoreMeta {
 
   @override
   String toString() =>
-      '$name($keyPath${autoIncrement ? ' auto' : ''}) $indecies';
+      '$name($_keyPath${autoIncrement ? ' auto' : ''}) $indecies';
 }
 
 class ProviderStore {
@@ -185,11 +195,11 @@ class ProviderStore {
         final index = this.index(indexName);
         indecies.add(index.meta);
       }
-      _meta = ProviderStoreMeta(
+      _meta = ProviderStoreMeta._(
         objectStore.name,
-        keyPath: objectStore.keyPath as String?,
-        autoIncrement: objectStore.autoIncrement,
-        indecies: indecies,
+        objectStore.keyPath,
+        objectStore.autoIncrement,
+        indecies,
       );
     }
     return _meta;
@@ -252,7 +262,7 @@ class ProviderIndexMeta {
       if (other.name != name) {
         return false;
       }
-      if (other.keyPath != keyPath) {
+      if (!_keyPathEquals(other.keyPath, keyPath)) {
         return false;
       }
       if (other.unique != unique) {

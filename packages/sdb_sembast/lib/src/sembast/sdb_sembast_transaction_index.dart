@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
-import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_import.dart';
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_sembast_meta.dart';
@@ -21,14 +21,17 @@ class SdbIndexRowSembast<K extends SdbKey> {
   });
 }
 
-/// True for a raw value usable as an index key, like idb: num, String or a
-/// list of them (composite key).
+/// True for a raw value usable as an index key, like idb `isValidKey`: a
+/// number (not NaN), a String, a binary or a list of them (composite key).
 bool sdbSembastIsValidRawIndexKey(Object? raw) {
-  if (raw is num || raw is String) {
+  if (raw is num) {
+    return !raw.isNaN;
+  }
+  if (raw is String || raw is Uint8List || raw is ByteBuffer) {
     return true;
   }
   if (raw is List) {
-    return raw.isNotEmpty && raw.every(sdbSembastIsValidRawIndexKey);
+    return raw.every(sdbSembastIsValidRawIndexKey);
   }
   return false;
 }
@@ -136,6 +139,9 @@ class SdbTransactionIndexRefSembast<
   /// The rows matching [options], filter (in dart on the decoded value),
   /// offset and limit applied.
   Future<List<SdbIndexRowSembast<K>>> find(SdbFindOptions options) async {
+    if (options.limit == 0) {
+      return [];
+    }
     var found = await rows(
       boundaries: options.boundaries,
       descending: options.descending ?? false,
@@ -225,19 +231,17 @@ class SdbTransactionIndexRefSembast<
 
   @override
   Future<int> countImpl({required SdbFindOptions<I> options}) async {
+    if (options.limit == 0) {
+      return 0;
+    }
     if (options.filter != null) {
       return (await find(options)).length;
     }
-    var count = (await rows(boundaries: options.boundaries)).length;
-    var offset = options.offset;
-    var limit = options.limit;
-    if (offset != null && offset > 0) {
-      count = max(0, count - offset);
-    }
-    if (limit != null && limit > 0) {
-      count = min(count, limit);
-    }
-    return count;
+    return sdbSembastOffsetLimitCount(
+      (await rows(boundaries: options.boundaries)).length,
+      offset: options.offset,
+      limit: options.limit,
+    );
   }
 
   @override
@@ -252,34 +256,20 @@ class SdbTransactionIndexRefSembast<
   Future<void> iterateImpl({
     required SdbFindOptions<SdbKey> options,
     required SdbIndexCursorRowHandler<K, V, I> handler,
-  }) async {
-    var found = await find(options);
-    // Like an idb cursor, the transaction waits for the row updates the
-    // handler did not await.
-    var pendingUpdates = <Future<void>>[];
-    try {
-      for (var row in found) {
-        var primaryKey = row.primaryKey;
-        var cursorRow = SdbIndexCursorRowImpl<K, V, I>.paged(
-          key: row.indexKey,
-          primaryKey: primaryKey,
-          rawValue: row.rawValue,
-          onUpdate: (data) {
-            var future = store.updateImpl(primaryKey, data);
-            pendingUpdates.add(future);
-            return future;
-          },
-        );
-        var result = handler(cursorRow);
-        var doContinue = result is Future<bool> ? await result : result;
-        if (!doContinue) {
-          return;
-        }
-      }
-    } finally {
-      await Future.wait(pendingUpdates);
-    }
-  }
+  }) async =>
+      store.iterateRecords<SdbIndexRowSembast<K>, SdbIndexCursorRow<K, V, I>>(
+        await find(options),
+        primaryKey: (row) => row.primaryKey,
+        newRow: (row, onUpdate, onUpdateValue) =>
+            SdbIndexCursorRowImpl<K, V, I>.paged(
+              key: row.indexKey,
+              primaryKey: row.primaryKey,
+              rawValue: row.rawValue,
+              onUpdate: onUpdate,
+              onUpdateValue: onUpdateValue,
+            ),
+        handler: handler,
+      );
 
   @override
   String toString() =>

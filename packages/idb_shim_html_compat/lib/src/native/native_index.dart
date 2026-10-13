@@ -18,14 +18,14 @@ class IndexNative extends Index {
   @override
   Future get(dynamic key) {
     return catchAsyncNativeError(() {
-      return idbIndex.get(key);
+      return idbIndex.get(toNativeQuery(key));
     });
   }
 
   @override
   Future getKey(dynamic key) {
     return catchAsyncNativeError(() {
-      return idbIndex.getKey(key);
+      return idbIndex.getKey(toNativeQuery(key));
     });
   }
 

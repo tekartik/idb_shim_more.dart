@@ -118,6 +118,44 @@ void defineCompatTests(
       expect(await _stringStore.add(db, {'name': 'new'}), isNotEmpty);
     });
 
+    test('untyped store ref in the same transaction', () async {
+      var untypedStore = SdbStoreRef<Object, Object>(_store.name);
+      await db.inStoresTransaction([_store], SdbTransactionMode.readWrite, (
+        txn,
+      ) async {
+        // Typed first, then untyped on the same store.
+        await _store.record(10).put(txn, {'name': 'd'});
+        expect(await untypedStore.count(txn), 7);
+        expect(
+          (await untypedStore.findRecordKeys(
+            txn,
+            options: SdbFindOptions(limit: 1),
+          )).map((record) => record.key),
+          [0],
+        );
+        expect(
+          (await untypedStore.findRecords(
+            txn,
+            options: SdbFindOptions(offset: 6),
+          )).map((record) => record.value),
+          [
+            {'name': 'd'},
+          ],
+        );
+        var rowCount = 0;
+        await untypedStore.iterate(
+          txn,
+          onRow: (row) {
+            rowCount++;
+            return true;
+          },
+        );
+        expect(rowCount, 7);
+        // Then typed again.
+        expect(await _store.record(10).get(txn), isNotNull);
+      });
+    });
+
     test('unique index violation', () async {
       await _store.record(10).put(db, {'u': 1});
       await expectLater(

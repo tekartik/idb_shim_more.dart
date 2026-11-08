@@ -27,7 +27,10 @@ class SdbTransactionSembast
   final sembast.Transaction sdbTransactionSembast;
 
   /// Transaction stores, created on demand.
-  final _txnStores = <String, SdbTransactionStoreRefSembast>{};
+  /// Transaction stores by name and exact key and value types: a
+  /// `<String, SdbModel>` store is a `<Object, Object>` one by covariance but
+  /// would reject the `<Object>` options of an `<Object, Object>` store ref.
+  final _txnStores = <(String, Type, Type), SdbTransactionStoreRefSembast>{};
 
   SdbTransactionSembast({
     required this.db,
@@ -62,12 +65,13 @@ class SdbTransactionSembast
     K extends SdbKey,
     V extends SdbValue
   >(SdbStoreRef<K, V> store) {
-    var txnStore = _txnStores[store.name];
+    var cacheKey = (store.name, K, V);
+    var txnStore = _txnStores[cacheKey];
     if (txnStore is SdbTransactionStoreRefSembast<K, V>) {
       return txnStore;
     }
     var created = newTxnStore<K, V>(store);
-    _txnStores[store.name] = created;
+    _txnStores[cacheKey] = created;
     return created;
   }
 

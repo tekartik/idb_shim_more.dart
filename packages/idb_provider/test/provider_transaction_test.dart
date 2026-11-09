@@ -93,6 +93,40 @@ void testMain(TestContext context) {
       expect(keyData[0], 1);
       expect(keyData[1], 2);
     });
+
+    test('cursor_offset', () async {
+      // offset skips once (every row was skipped again, giving nothing).
+      await providerSetUp();
+      final storeTxn = provider.storeTransaction(storeName, true);
+      for (var i = 1; i <= 4; i++) {
+        storeTxn.put({'my_key': i, 'value': 'value$i'}).unawait();
+      }
+      await storeTxn.completed;
+
+      Future<List<Object?>> values(Stream<CursorWithValue> stream) async =>
+          (await stream.toList())
+              .map((cwv) => (cwv.value as Map)['value'])
+              .toList();
+
+      var txn = provider.storeTransaction(storeName, false);
+      expect(await values(txn.openCursor(offset: 1)), [
+        'value2',
+        'value3',
+        'value4',
+      ]);
+      expect(await values(txn.openCursor(offset: 1, limit: 2)), [
+        'value2',
+        'value3',
+      ]);
+      await txn.completed;
+
+      final indexTxn = provider.indexTransaction(storeName, indexName);
+      expect(await values(indexTxn.openCursor(offset: 2)), [
+        'value3',
+        'value4',
+      ]);
+      await indexTxn.completed;
+    });
   });
 }
 

@@ -3,8 +3,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:idb_shim/idb.dart'
-    show DatabaseException, DatabaseReadOnlyError;
+import 'package:idb_shim/idb.dart' show DatabaseError, DatabaseReadOnlyError;
 import 'package:sembast/sembast.dart' as sembast;
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_import.dart';
 import 'package:tekartik_sdb_sembast/src/sembast/sdb_sembast_meta.dart';
@@ -213,7 +212,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
         );
         if (otherIndexKey != null &&
             compareKeys(otherIndexKey, indexKey) == 0) {
-          throw DatabaseException(
+          throw DatabaseError(
             'Unique index ${index.name} of store ${store.name}: '
             'key $indexKey already used by record ${record.key}',
           );
@@ -278,7 +277,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
       // A String key is generated, an int key only for an auto increment
       // store.
       if (K != String && !autoIncrement) {
-        throw DatabaseException(
+        throw DatabaseError(
           'Store ${store.name} has no key path and no auto increment, '
           'a key is required',
         );
@@ -310,9 +309,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
     var key = value.getKeyValue(idbKeyPath);
     if (key == null) {
       if (!meta!.autoIncrement) {
-        throw DatabaseException(
-          'Missing key at $keyPath in store ${store.name}',
-        );
+        throw DatabaseError('Missing key at $keyPath in store ${store.name}');
       }
       // Checked before generating the key: a failed add must not consume it.
       var encoded = _codec.encode(value);
@@ -330,9 +327,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
       return key;
     }
     if (await sembastStore.record(key as K).exists(sembastClient)) {
-      throw DatabaseException(
-        'Record $key already exists in store ${store.name}',
-      );
+      throw DatabaseError('Record $key already exists in store ${store.name}');
     }
     await _write(key, value, _codec.encode(value));
     return key;
@@ -353,9 +348,7 @@ class SdbTransactionStoreRefSembast<K extends SdbKey, V extends SdbValue>
       }
       key = value.getKeyValue(sdbKeyPathToIdbKeyPath(keyPath)) as K?;
       if (key == null) {
-        throw DatabaseException(
-          'Missing key at $keyPath in store ${store.name}',
-        );
+        throw DatabaseError('Missing key at $keyPath in store ${store.name}');
       }
     }
     await _write(key, value, _codec.encode(value));

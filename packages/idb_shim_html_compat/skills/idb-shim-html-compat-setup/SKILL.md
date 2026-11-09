@@ -26,7 +26,6 @@ annotated `@Deprecated('Use idb_shim_web instead')`: keep it for apps still on
       git:
         url: https://github.com/tekartik/idb_shim_more.dart
         path: packages/idb_shim_html_compat
-      version: '>=0.3.3'
   ```
   It depends on `idb_shim` itself, which stays the API you code against.
 * The single public library is
@@ -45,7 +44,10 @@ annotated `@Deprecated('Use idb_shim_web instead')`: keep it for apps still on
 * Everything after `open()` is plain `idb_shim`: the same `Database`,
   `Transaction`, `ObjectStore`, `Index`, `KeyRange` and cursors as any other
   factory (see the `idb-shim-database` and `idb-shim-sdb` skills of
-  `idb_shim`). Only the factory selection is specific to this package.
+  `idb_shim`). Only the factory selection is specific to this package. As in
+  idb_shim, an `onUpgradeNeeded` that throws (or whose future fails) aborts
+  the upgrade: the database keeps its previous version and `open()` throws
+  that error.
 * Platform: the library is a conditional export
   (`dart.library.html`). Importing it compiles everywhere, but off the web
   every getter throws (an unimplemented stub) - a VM test can only check that

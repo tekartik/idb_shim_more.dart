@@ -9,14 +9,14 @@ import 'package:tekartik_sdb_sembast/src/sembast/sdb_sembast_database.dart';
 /// Sembast based factory
 abstract class SdbFactorySembast implements SdbFactory {}
 
-/// Factory from idb factory.
+/// An sdb factory on top of a sembast [sembastFactory] (memory, io or web).
 SdbFactorySembast sdbFactorySembastFrom(
   sembast.DatabaseFactory sembastFactory,
 ) {
   return _SdbFactorySembast(sembastFactory);
 }
 
-/// Create a new in memory factory.
+/// A new in memory sdb factory (an empty sembast memory factory).
 SdbFactorySembast sdbFactorySembastNewInMemory() =>
     sdbFactorySembastFrom(newDatabaseFactoryMemory());
 

@@ -359,6 +359,8 @@ abstract class DbRecordBaseProvider<T extends DbRecordBase, K> {
     for (final ctlr in _onChangeCtlrs) {
       ctlr.close();
     }
+    // A later write must not add to the closed controllers.
+    _onChangeCtlrs.clear();
   }
 
   bool get _hasListener => _onChangeCtlrs.isNotEmpty;
@@ -367,11 +369,9 @@ abstract class DbRecordBaseProvider<T extends DbRecordBase, K> {
 abstract class DbRecordProvider<T extends DbRecord, K>
     extends DbRecordBaseProvider<T, K> {
   Future<T> put(T record) async {
-    var txn = storeTransaction(true);
-    record = await txnPut(
-      txn as DbRecordProviderWriteTransaction<T, K>,
-      record,
-    );
+    // Typed (storeTransaction(true) is not a <T, K> transaction).
+    var txn = writeTransaction;
+    record = await txnPut(txn, record);
     await txn.completed;
     return record;
   }

@@ -81,7 +81,7 @@ class TodoList {
           'timeStamp': DateTime.now().millisecondsSinceEpoch.toString(),
         })
         .then((_) => _getAllTodoItems())
-        .catchError((e) => _onError);
+        .catchError(_onError);
   }
 
   void _deleteTodo(String id) {
@@ -148,11 +148,16 @@ Map<String, String> getArguments(String? search) {
   return params;
 }
 
+/// The factory named [idbFactoryName], null if not supported.
 idb.IdbFactory? factoryFromName(String? idbFactoryName) {
   if (idbFactoryName == 'native_html') {
     return idbFactoryNativeHtml;
   }
-  return idb.getIdbFactory(idbFactoryName);
+  try {
+    return idb.getIdbFactory(idbFactoryName);
+  } on UnsupportedError catch (_) {
+    return null;
+  }
 }
 
 Future<void> main() async {

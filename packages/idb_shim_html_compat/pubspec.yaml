@@ -1,7 +1,7 @@
 name: idb_shim_html_compat
 version: 2.4.1+4
 publish_to: none
-description: indexed_db dart base interface with implementation for native (browser), file (io) and in memory.
+description: Legacy idb_shim IndexedDB factory for the browser built on dart:html (dart2js only).
 homepage: https://github.com/tekartik/idb_shim.dart/tree/master/idb_shim
 topics:
   - nosql

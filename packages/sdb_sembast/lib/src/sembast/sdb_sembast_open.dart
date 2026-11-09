@@ -94,14 +94,31 @@ class SdbOpenDatabaseSembastPrv implements SdbOpenDatabase {
   @override
   Iterable<String> get objectStoreNames => metas.keys;
 
+  /// The drops of the deleted stores, chained on the version change
+  /// transaction. As idb, a deleted store has no record left, even when
+  /// created again in the same version change: every store operation of the
+  /// version change waits for them.
+  Future<void>? _drops;
+
+  /// Completes once the stores deleted so far are dropped, null if none was.
+  Future<void>? get pendingDrops => _drops;
+
   @override
   void deleteStore(String storeName) {
     metas.remove(storeName);
     _deletedStoreNames.add(storeName);
+    var txn = transaction.sdbTransactionSembast;
+    var previous = _drops ?? Future<void>.value();
+    // The error, if any, is reported by the next operation and by commit.
+    _drops = previous.then(
+      (_) => sembast.StoreRef<Object, Object>(storeName).drop(txn),
+    )..ignore();
   }
 
   /// Drop the deleted stores and write the schema.
   Future<void> commit(sembast.Transaction txn) async {
+    await _drops;
+    // Records written to a deleted store not created again.
     for (var name in _deletedStoreNames) {
       if (!metas.containsKey(name)) {
         await sembast.StoreRef<Object, Object>(name).drop(txn);
@@ -116,6 +133,66 @@ class SdbOpenStoreRefSembast<K extends SdbKey, V extends SdbValue>
     extends SdbTransactionStoreRefSembast<K, V>
     implements SdbOpenStoreRefInterface<K, V> {
   SdbOpenStoreRefSembast({required super.transaction, required super.store});
+
+  /// Run [action] once the stores deleted so far are dropped.
+  Future<T> _afterDrops<T>(Future<T> Function() action) async {
+    var drops =
+        (transaction as SdbOpenTransactionSembastPrv).openDatabase.pendingDrops;
+    if (drops != null) {
+      await drops;
+    }
+    return await action();
+  }
+
+  @override
+  Future<List<SdbRawRecordSembast<K>>> findAllRaw() =>
+      _afterDrops(super.findAllRaw);
+
+  @override
+  Future<SdbRecordSnapshot<K, V>?> getRecordImpl(K key) =>
+      _afterDrops(() => super.getRecordImpl(key));
+
+  @override
+  Future<bool> existsImpl(K key) => _afterDrops(() => super.existsImpl(key));
+
+  @override
+  Future<K> addImpl(V value) => _afterDrops(() => super.addImpl(value));
+
+  @override
+  Future<void> putImpl(K? key, V value) =>
+      _afterDrops(() => super.putImpl(key, value));
+
+  @override
+  Future<void> putRawImpl(K key, Object rawValue) =>
+      _afterDrops(() => super.putRawImpl(key, rawValue));
+
+  @override
+  Future<void> deleteImpl(K key) => _afterDrops(() => super.deleteImpl(key));
+
+  @override
+  Future<List<SdbRecordSnapshot<K, V>>> findRecordsImpl({
+    required SdbFindOptions<K> options,
+  }) => _afterDrops(() => super.findRecordsImpl(options: options));
+
+  @override
+  Future<void> iterateImpl({
+    required SdbFindOptions<K> options,
+    required SdbCursorRowHandler<K, V> handler,
+  }) =>
+      _afterDrops(() => super.iterateImpl(options: options, handler: handler));
+
+  @override
+  Future<List<SdbRecordKey<K, V>>> findRecordKeysImpl({
+    required SdbFindOptions<K> options,
+  }) => _afterDrops(() => super.findRecordKeysImpl(options: options));
+
+  @override
+  Future<int> countImpl({required SdbFindOptions<K> options}) =>
+      _afterDrops(() => super.countImpl(options: options));
+
+  @override
+  Future<void> deleteRecordsImpl({required SdbFindOptions<K> options}) =>
+      _afterDrops(() => super.deleteRecordsImpl(options: options));
 
   SdbStoreMetaSembast get _meta =>
       meta ?? (throw StateError('Store ${store.name} not found'));

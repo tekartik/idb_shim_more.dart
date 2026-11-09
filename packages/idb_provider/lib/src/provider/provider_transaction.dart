@@ -150,6 +150,8 @@ mixin ProviderSourceTransactionMixin<K, V>
     final ctlr = StreamController<T>(sync: true);
 
     var count = 0;
+    // Skipped once, by the first advance.
+    var toSkip = offset ?? 0;
 
     void close() {
       if (!ctlr.isClosed) {
@@ -158,8 +160,10 @@ mixin ProviderSourceTransactionMixin<K, V>
     }
 
     void onCursorValue(T c) {
-      if (offset != null && offset > 0) {
-        c.advance(offset);
+      if (toSkip > 0) {
+        var skip = toSkip;
+        toSkip = 0;
+        c.advance(skip);
       } else {
         if (limit != null) {
           if (count >= limit) {

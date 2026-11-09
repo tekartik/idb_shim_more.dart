@@ -61,7 +61,8 @@ README says **Not maintained**: use it for existing code.
   completes; each event is a `DbRecordProviderPutEvent` (`.record`),
   `DbRecordProviderDeleteEvent` (`.key`) or `DbRecordProviderClearEvent`, with
   `.syncing` true when the change came from a sync. `close()` closes the
-  listeners.
+  `onChange` streams; the provider stays usable (later writes notify only
+  the streams listened to after it).
 * Synced records (`DbSyncedRecordProvider`): every local write marks the record
   `dirty` and bumps `version`; a write done while synchronizing passes
   `syncing: true` (`put(record, syncing: true)`, `delete(id, syncing: true)`,

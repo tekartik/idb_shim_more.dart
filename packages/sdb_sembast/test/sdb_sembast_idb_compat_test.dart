@@ -13,7 +13,8 @@ var _uniqueIndex = _store.index<int>('u');
 var _autoStore = SdbStoreRef<int, SdbModel>('compat_auto');
 var _stringStore = SdbStoreRef<String, SdbModel>('compat_string');
 
-/// Same behavior on the idb based sdb and on sdb_sembast.
+/// Same behavior on the idb based sdb and on sdb_sembast (errors included:
+/// a failed write throws a [DatabaseError], since idb_shim 2.11.3).
 void main() {
   defineCompatTests('idb', sdbFactoryFromIdb(newIdbFactoryMemory()));
   defineCompatTests('sembast', sdbFactorySembastNewInMemory(), sembast: true);
@@ -110,7 +111,7 @@ void defineCompatTests(
     test('add without key path and auto increment', () async {
       await expectLater(
         () => _store.add(db, {'name': 'new'}),
-        throwsA(isA<DatabaseException>()),
+        throwsA(isA<DatabaseError>()),
       );
       expect(await _store.count(db), 6);
       // Generated keys
@@ -160,7 +161,7 @@ void defineCompatTests(
       await _store.record(10).put(db, {'u': 1});
       await expectLater(
         () => _store.record(11).put(db, {'u': 1}),
-        throwsA(isA<DatabaseException>()),
+        throwsA(isA<DatabaseError>()),
       );
       expect(await _store.record(11).exists(db), isFalse);
     });
@@ -199,7 +200,7 @@ void defineCompatTests(
               return true;
             },
           ),
-          throwsA(isA<DatabaseException>()),
+          throwsA(isA<DatabaseError>()),
         );
         expect((await _store.record(0).get(db))!.value, {'name': 'a'});
       });

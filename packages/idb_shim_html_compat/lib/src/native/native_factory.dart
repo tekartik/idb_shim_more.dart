@@ -59,17 +59,42 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
     int? version,
     OnUpgradeNeededFunction? onUpgradeNeeded,
     OnBlockedFunction? onBlocked,
-  }) {
+  }) async {
     FutureOr? onUpdateNeededFutureOr;
     Object? onUpdateNeededException;
+    StackTrace? onUpdateNeededStackTrace;
 
     void openOnUpgradeNeeded(idb.VersionChangeEvent e) {
       final event = VersionChangeEventNative(this, e);
+      var currentTarget = e.currentTarget;
+      var upgradeTransaction = currentTarget is idb.Request
+          ? currentTarget.transaction
+          : null;
+      // The error is caught here, so the browser does not abort the
+      // version change transaction: abort it (best effort, it may have
+      // committed already) so that a failed upgrade is not kept (as
+      // idb_shim).
+      void onError(Object error, StackTrace stackTrace) {
+        if (onUpdateNeededException == null) {
+          onUpdateNeededException = error;
+          onUpdateNeededStackTrace = stackTrace;
+        }
+        try {
+          upgradeTransaction?.abort();
+        } catch (_) {
+          // Already committed.
+        }
+      }
 
       try {
-        onUpdateNeededFutureOr = onUpgradeNeeded!(event);
-      } catch (e) {
-        onUpdateNeededException = e;
+        var result = onUpgradeNeeded!(event);
+        onUpdateNeededFutureOr = result;
+        if (result is Future) {
+          // Right away, while its requests keep the transaction active.
+          result.then<void>((_) {}, onError: onError).ignore();
+        }
+      } catch (error, stackTrace) {
+        onError(error, stackTrace);
       }
     }
 
@@ -83,32 +108,41 @@ class IdbFactoryNativeWrapperImpl extends IdbFactoryBase {
       }
     }
 
-    return nativeFactory
-        .open(
-          dbName,
-          version: version,
-          onUpgradeNeeded: onUpgradeNeeded == null ? null : openOnUpgradeNeeded,
-          onBlocked: onBlocked == null && onUpgradeNeeded == null
-              ? null
-              : openOnBlocked,
-        )
-        .then((idb.Database database) async {
-          // Handle exception in onUpgradeNeeded
-          if (onUpdateNeededFutureOr is Future &&
-              onUpdateNeededException == null) {
-            try {
-              await onUpdateNeededFutureOr;
-            } catch (e) {
-              onUpdateNeededException = e;
-            }
-          }
-          if (onUpdateNeededException != null) {
-            database.close();
-            throw onUpdateNeededException!;
-          }
+    idb.Database database;
+    try {
+      database = await nativeFactory.open(
+        dbName,
+        version: version,
+        onUpgradeNeeded: onUpgradeNeeded == null ? null : openOnUpgradeNeeded,
+        onBlocked: onBlocked == null && onUpgradeNeeded == null
+            ? null
+            : openOnBlocked,
+      );
+    } catch (_) {
+      // The open request fails (AbortError) when the upgrade was aborted:
+      // report the error of the upgrade.
+      if (onUpdateNeededException != null) {
+        Error.throwWithStackTrace(
+          onUpdateNeededException!,
+          onUpdateNeededStackTrace ?? StackTrace.current,
+        );
+      }
+      rethrow;
+    }
+    // Handle exception in onUpgradeNeeded
+    if (onUpdateNeededFutureOr is Future && onUpdateNeededException == null) {
+      try {
+        await onUpdateNeededFutureOr;
+      } catch (e) {
+        onUpdateNeededException = e;
+      }
+    }
+    if (onUpdateNeededException != null) {
+      database.close();
+      throw onUpdateNeededException!;
+    }
 
-          return DatabaseNative(this, database);
-        });
+    return DatabaseNative(this, database);
   }
 
   @override

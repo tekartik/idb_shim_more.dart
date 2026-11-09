@@ -366,6 +366,51 @@ void testMain(TestContext context) {
         //index.
         //expect(key, '_1');
       });
+
+      test('put', () async {
+        // put used a transaction of the wrong type (cast error).
+        final appProvider = DbBasicAppProvider(idbFactory, context.dbName);
+        await appProvider.delete();
+        await appProvider.ready;
+        final record = await appProvider.basic.put(
+          DbBasicRecord()
+            ..id = '_1'
+            ..name = 'test',
+        );
+        expect(record.id, '_1');
+        expect((await appProvider.basic.get('_1'))!.name, 'test');
+        appProvider.close();
+      });
+
+      test('write after close', () async {
+        // close() closed the change controllers but kept them: the next
+        // write failed adding to them.
+        final appProvider = DbBasicAppProvider(idbFactory, context.dbName);
+        await appProvider.delete();
+        await appProvider.ready;
+        final events = <List<DbRecordProviderEvent>>[];
+        appProvider.basic.onChange.listen(events.add);
+        var txn = appProvider.basic.writeTransaction;
+        await txn.putRecord(
+          DbBasicRecord()
+            ..id = '_1'
+            ..name = 'a',
+        );
+        await txn.completed;
+        expect(events.length, 1);
+
+        appProvider.basic.close();
+        txn = appProvider.basic.writeTransaction;
+        await txn.putRecord(
+          DbBasicRecord()
+            ..id = '_2'
+            ..name = 'b',
+        );
+        await txn.completed;
+        expect(events.length, 1);
+        expect((await appProvider.basic.get('_2'))!.name, 'b');
+        appProvider.close();
+      });
     });
   });
 }

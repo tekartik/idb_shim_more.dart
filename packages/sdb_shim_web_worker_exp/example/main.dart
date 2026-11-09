@@ -34,8 +34,11 @@ Future<Object?> sendRawMessage(Object message) {
   messageChannel.port1.onmessage = (web.MessageEvent event) {
     zone.run(() {
       var data = event.data.dartify();
-
-      completer.complete(data);
+      if (data is Map && data['error'] != null) {
+        completer.completeError(StateError('worker: ${data['error']}'));
+      } else {
+        completer.complete(data);
+      }
     });
   }.toJS;
 
@@ -77,15 +80,19 @@ Future<void> setTestValue(int? value) async {
 Future<void> incrementVarInWorker() async {
   await _webContextRegisterAndReady;
   write('shared worker ready');
-  var value = await getTestValue();
-  write('var before $value');
-  if (value is! int) {
-    value = 0;
-  }
+  try {
+    var value = await getTestValue();
+    write('var before $value');
+    if (value is! int) {
+      value = 0;
+    }
 
-  await setTestValue(value + 1);
-  value = await getTestValue();
-  write('var after $value');
+    await setTestValue(value + 1);
+    value = await getTestValue();
+    write('var after $value');
+  } catch (e) {
+    write('error $e');
+  }
 }
 
 void initUi() {

@@ -2,6 +2,7 @@
 library;
 
 import 'package:idb_test/sdb_iterate_test.dart';
+import 'package:idb_test/sdb_review_regression_test.dart';
 import 'package:idb_test/sdb_test.dart';
 import 'package:idb_test/test_runner.dart';
 import 'package:path/path.dart';
@@ -17,4 +18,6 @@ void main() {
   );
   sdbDefineAllTests(ctx);
   sdbIterateTests(ctx);
+  // Same suites as the memory runner.
+  sdbReviewRegressionTests(ctx);
 }

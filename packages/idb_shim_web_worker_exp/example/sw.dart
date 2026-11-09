@@ -27,14 +27,18 @@ var _database = () async {
     },
   );
 }();
-Future<void> _handleMessageEvent(web.Event event) async {
+
+/// Handles a command message, the response is posted on its port (an
+/// `{'error': ...}` map when the command fails).
+Future<void> handleMessageEvent(web.Event event) async {
   var messageEvent = event as web.MessageEvent;
   var rawData = messageEvent.data.dartify();
   print('sw rawData $rawData');
+  web.MessagePort? port;
   try {
     var jsPorts = messageEvent.ports;
     var ports = jsPorts.toDart;
-    var port = ports.first;
+    port = ports.first;
 
     if (rawData is List) {
       var command = rawData[0];
@@ -74,6 +78,8 @@ Future<void> _handleMessageEvent(web.Event event) async {
     }
   } catch (e) {
     print('error $e');
+    // Answer anyway: the page waits for a response on this port.
+    port?.postMessage({'error': e.toString()}.jsify());
   }
 }
 
@@ -87,7 +93,7 @@ void main(List<String> args) {
   try {
     scope.onmessage = (web.MessageEvent event) {
       zone.run(() {
-        _handleMessageEvent(event);
+        handleMessageEvent(event);
       });
     }.toJS;
   } catch (e) {

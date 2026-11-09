@@ -103,10 +103,10 @@ void testMain(TestContext context) {
       }
       await storeTxn.completed;
 
-      Future<List<Object?>> values(Stream<CursorWithValue> stream) async =>
-          (await stream.toList())
-              .map((cwv) => (cwv.value as Map)['value'])
-              .toList();
+      // Read the value during the walk: a native cursor is a single object
+      // whose value is gone once it moved on.
+      Future<List<Object?>> values(Stream<CursorWithValue> stream) =>
+          stream.map((cwv) => (cwv.value as Map)['value']).toList();
 
       var txn = provider.storeTransaction(storeName, false);
       expect(await values(txn.openCursor(offset: 1)), [

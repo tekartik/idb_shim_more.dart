@@ -29,9 +29,13 @@ class JdbFactoryWeb extends JdbFactoryIdb {
     _revisionSubscription = notificationRevisionStream.listen((
       notificationRevision,
     ) {
-      var list = databases[notificationRevision.name]!;
-      for (var jdbDatabase in list) {
-        jdbDatabase.addRevision(notificationRevision.revision);
+      // null when the database is not open in this tab (another tab wrote
+      // another database), as sembast_web (sembast.dart#408).
+      var list = databases[notificationRevision.name];
+      if (list != null) {
+        for (var jdbDatabase in list) {
+          jdbDatabase.addRevision(notificationRevision.revision);
+        }
       }
     });
   }

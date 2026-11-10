@@ -26,8 +26,11 @@ above it is plain `sembast`. New code should depend on `sembast_web` instead.
       git:
         url: https://github.com/tekartik/idb_shim_more.dart
         path: packages/sembast_web_html_compat
+    sembast: '>=3.10.1'
   ```
-  It pulls `sembast`, `sembast_web`, `idb_shim` and `idb_shim_html_compat`.
+  It pulls `sembast` (3.10.1 at least: the cross tab fixes), `sembast_web`,
+  `idb_shim`, `idb_shim_html_compat` and, as a regular dependency today,
+  `sembast_test` (used by its tests only).
 * The whole public API is
   `import 'package:sembast_web_html_compat/sembast_web_html.dart';` ->
   `DatabaseFactory get databaseFactoryWeb`. It does not re-export `sembast`
@@ -135,7 +138,7 @@ Future<void> main() async {
 ### Guarding the web-only access in shared code
 
 ```dart
-import 'package:sembast/sembast.dart';
+// sembast_memory.dart re-exports sembast.dart.
 import 'package:sembast/sembast_memory.dart';
 import 'package:sembast_web_html_compat/sembast_web_html.dart';
 

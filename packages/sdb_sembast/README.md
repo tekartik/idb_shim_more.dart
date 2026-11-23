@@ -56,6 +56,18 @@ Future<void> main() async {
   `package:sembast_web`).
 - `sdbFactorySembastNewInMemory()`: a new empty in memory factory (tests).
 
+`example/sdb_demo.dart` runs the same notes on the VM (sembast in memory)
+and in a browser (sembast_web, IndexedDB):
+
+```sh
+dart run example/sdb_demo.dart
+dart run tekartik_common_build:web_run example/sdb_demo.dart
+dart run tekartik_common_build:web_run --wasm example/sdb_demo.dart
+```
+
+`test/sdb_demo_test.dart` runs it all three ways (headless Chrome; skipped
+without Chrome).
+
 ## Behaviour
 
 Same as the idb based sdb: a failed write throws a `DatabaseError` (a

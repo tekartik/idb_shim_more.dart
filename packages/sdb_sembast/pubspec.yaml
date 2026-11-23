@@ -18,6 +18,10 @@ dev_dependencies:
   lints: ">=6.1.0"
   path: ">=1.9.1"
   sembast_web: ">=2.4.0"
+  tekartik_common_build:
+    git:
+      url: https://github.com/tekartik/app_build.dart
+      path: packages/common_build
   tekartik_lints:
     git:
       url: https://github.com/tekartik/common.dart
